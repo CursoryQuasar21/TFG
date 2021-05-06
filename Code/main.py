@@ -1,3 +1,4 @@
+'''No pertenece al proyecto, es usada como referencia y a nivel educativo'''
 import pygame
 import numpy as np
 import time
