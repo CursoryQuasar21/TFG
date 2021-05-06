@@ -31,9 +31,19 @@ objetivo1=ObjetivoSimple()
 objetivo1.constructor(1,1,0)
 lista_Objetivos.append(objetivo1)
 #Instanciar el slider
-slider=Slider(3,3,1,1)
+slider=Slider(3,3,4,1)
 slider.dimensionesMapa(nxC,nyC)
+slider.colaX=slider.posicionEjeX[0]
+slider.colaY=slider.posicionEjeY[0]
+slider.posicionEjeX.append(3)
+slider.posicionEjeY.append(2)
+slider.posicionEjeX.append(3)
+slider.posicionEjeY.append(1)
+slider.posicionEjeX.append(3)
+slider.posicionEjeY.append(0)
 
+#slider.posicionEjeY.append(slider.posicionEjeY[len(slider.posicionEjeY)-1])
+#slider.posicionEjeX.append(slider.posicionEjeX[len(slider.posicionEjeX)-1])
 for i in range(0, slider.longitud):
     gameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 1
 #Flujo de ejecucion
@@ -42,7 +52,7 @@ while True:
     #Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
     newGameState=np.copy(gameState)
     # Añadir un tiempo de espera para que el programa vaya mas lento
-    time.sleep(0.2)
+    time.sleep(0.1)
     #Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
     screen.fill(bg)
     #Eventos de Teclado y raton
@@ -54,37 +64,43 @@ while True:
             #Teclas W y Up
             if event.key==pygame.K_w or event.key==pygame.K_UP:
                 if slider.direccion!="arriba" and slider.direccion!="abajo":
-                    newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
                     slider.direccion="arriba"
-                    for i in range(0,slider.longitud):
-                        newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]]=1
             #Teclas S y Down
             elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
                 if slider.direccion != "abajo" and slider.direccion!="arriba":
-                    newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
                     slider.direccion="abajo"
-                    for i in range(0,slider.longitud):
-                        newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]]=1
             #Teclas A y Left
             elif event.key==pygame.K_a or event.key==pygame.K_LEFT:
                 if slider.direccion != "izquierda" and slider.direccion!="derecha":
-                    newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
                     slider.direccion="izquierda"
-                    for i in range(0,slider.longitud):
-                        newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]]=1
             #Teclas D y Right
             elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
                 if slider.direccion != "derecha" and slider.direccion!="izquierda":
-                    newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
                     slider.direccion="derecha"
-                    for i in range(0,slider.longitud):
-                        newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]]=1
 
     #Automatizamos la direccion, para que el slider siga con la direccion establecida
-    for i in range(0, slider.longitud):
-        newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
-        slider.cambiaDireccion(slider.direccion)
-        newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 1
+    newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 0
+    slider.cambiaDireccion(0, slider.direccion)
+    newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 1
+    if slider.longitud>1 and slider.direccion!="ninguna":
+        varX = 0
+        varY = 0
+        for i in range(1, slider.longitud):
+            newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
+            varX=slider.posicionEjeX[i]
+            varY=slider.posicionEjeY[i]
+            slider.posicionEjeX[i]=slider.colaX
+            slider.posicionEjeY[i] = slider.colaY
+            newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 1
+            slider.colaX=varX
+            slider.colaY=varY
+    slider.colaX = slider.posicionEjeX[0]
+    slider.colaY = slider.posicionEjeY[0]
+    '''if slider>1:
+        for i in range(1, slider.longitud):
+            newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
+            slider.cambiaDireccion(i, slider.direccion)
+            slider'''
     #Estos bucles sirven para dibujar las celdas del juego
     for y in range(0, nxC):
         for x in range(0, nyC):
