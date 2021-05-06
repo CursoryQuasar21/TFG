@@ -4,11 +4,13 @@ class ObjetivoSimple():
     movimiento=0
     estado=2
 
-    def constructor(self,ejeX,ejeY,movimiento):
+    def __init__(self,ejeX,ejeY,movimiento):
         self.posicionEjeX=ejeX
         self.posicionEjeY=ejeY
         self.movimiento=movimiento
 
+    #Método para añadir dificultad al juego
+    #Según aumente la dificultad se moverá más rápido
     def cambiaPosicion(self,direccion):
         if direccion=="arriba":
             for i in self.posicionEjeX:

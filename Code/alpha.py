@@ -3,6 +3,7 @@ import numpy as np
 import time
 import keyboard as kb
 from objetivo import ObjetivoSimple
+import sys
 #Importamos los elementos que necesia nuestro programa
 
 #Crea la pantalla de nuestro juego
@@ -18,7 +19,7 @@ bg=25,25,25
 #Cambiamos el color de fondo por el elegido
 screen.fill(bg)
 #Numero de celdas en los ejes x e y
-nxC,nyC=10,10
+nxC,nyC=75,75
 #Dimensiones de las celdas en funcion del numero y cantidad de las mismas
 dimCW=width/nxC
 dimCH=height/nyC
@@ -27,8 +28,7 @@ gameState=np.zeros((nxC,nyC))
 #Estado de la celda. Muerta=0, Slider=1, Objetivo=2
 #Creamos los objetivos
 lista_Objetivos=[]
-objetivo1=ObjetivoSimple()
-objetivo1.constructor(1,1,0)
+objetivo1=ObjetivoSimple(1,1,0)
 lista_Objetivos.append(objetivo1)
 #Instanciar el slider
 slider=Slider()
@@ -40,6 +40,13 @@ for i in range(0, slider.longitud):
 #Flujo de ejecucion
 pauseEcpect=False
 while True:
+
+    #Bucle que gestiona el cierre de la ventana
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+            
     #Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
     newGameState=np.copy(gameState)
 
@@ -107,3 +114,4 @@ while True:
     gameState=np.copy(newGameState)
     #Actualizamos la pantalla
     pygame.display.flip()
+    
