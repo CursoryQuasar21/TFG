@@ -1,7 +1,8 @@
+from objetivo import ObjetivoSimple
+
 class Slider():
-    #Posiciones de los objetivos
-    posicionObjetivoEjeX=[]
-    posicionObjetivoEjeY=[]
+    #Array que guarda instancias de objetivos
+    objetivos = []
     #Dimensiones del mapa
     celdasX=0
     celdasY=0
@@ -12,7 +13,7 @@ class Slider():
     direccion="ninguna"
     longitud=1
     movimiento=1
-    estado=1
+    estado=2
     colaX=0
     colaY=0
 
@@ -22,22 +23,14 @@ class Slider():
         self.longitud=longitud
         self.movimiento=movimiento
 
-    def dimensionesMapa(self, celdasX, celdasY):
-        self.celdasX=celdasX
-        self.celdasY=celdasY
-
+    #En desarrollo
     def registraObjetivos(self, ejesX, ejesY):
         for i in ejesX:
             self.posicionObjetivoEjeX[i]=ejesX[i]
         for i in ejesY:
             self.posicionObjetivoEjeX[i]=ejesY[i]
 
-    def aumentarLongitud(self):
-        self.longitud+=1
-
-    def disminuirLongitud(self):
-        self.longitud-=1
-
+    #En desarrollo, hay que mirar el funcionamiento cuando la velocidad es superior a 1
     def cambiaDireccion(self,eje,direccion):
         if direccion=="arriba":
             self.direccion="arriba"
@@ -67,10 +60,15 @@ class Slider():
                 self.posicionEjeX[eje]=0
             else:
                 self.posicionEjeX[eje]+=self.movimiento
+    #A desarrollar Mario
+    def objetivo_alcanzado(self):
+        
+        #Instanciamos un objeto objetivo para poder acceder sus atributos
+        objetivo = ObjetivoSimple()
+        ejeX_objetivo = objetivo.posicionEjeX
+        ejeY_objetivo = objetivo.posicionEjeY
 
-    def isObjetivosCumplido(self):
-        for i in self.posicionObjetivoEjeX:
-            if self.posicionEjeX(0)==self.posicionObjetivoEjeX(i) and self.posicionEjeY(0)==self.posicionObjetivoEjeY(i):
-                self.longitud=+1
-                #Falta Añadir el nombre y el metodo(este fuera de este metodo) que alfinal del guasano, al pasar por el punto del objetivo se haga mas largo
-                return True
+        #Evaluamos la condición de cuando se choquen
+        if self.posicionEjeX == ejeX_objetivo and self.posicionEjeY == ejeY_objetivo:
+            print("He tocado un objetivo")
+            
