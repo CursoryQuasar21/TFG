@@ -34,7 +34,7 @@ lista_Objetivos.append(objetivo1)
 lista_Objetivos.append(objetivo2)
 
 #Instanciar el slider
-slider=Slider(3,3,4,1)
+slider=Slider(3,3,1,1)
 slider.celdasX = nxC
 slider.celdasY = nyC
 slider.colaX=slider.posicionEjeX[0]
@@ -53,6 +53,7 @@ for i in range(0, slider.longitud):
 #Pintamos los objetivo
 for i in range(0, len(lista_Objetivos)):
     gameState[lista_Objetivos[i].posicionEjeX, lista_Objetivos[i].posicionEjeY] = 1
+    slider.objetivos.append(lista_Objetivos[i])
 
 
 #Flujo de ejecucion
@@ -78,6 +79,9 @@ while True:
     for event in ev:
         # Evento de teclado
         if event.type==pygame.KEYDOWN:
+            print(event.key)
+            if event.key == pygame.K_SPACE:
+                pauseEcpect=not  pauseEcpect
             #Filtramos de todas las teclas del teclado las que nos interesa para movernos(w,a,s,d,flechitas)
             #Teclas W y Up
             if event.key==pygame.K_w or event.key==pygame.K_UP:
@@ -142,7 +146,9 @@ while True:
             elif newGameState[x,y]==2:
                 pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
 
-    #Actualizamos el estado del juego
+    #Método que gestiona colisiones del slider con objetivos
+    slider.objetivo_alcanzado()
+            #Actualizamos el estado del juego
     gameState=np.copy(newGameState)
     #Actualizamos la pantalla
     

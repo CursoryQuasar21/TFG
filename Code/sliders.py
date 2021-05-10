@@ -62,13 +62,14 @@ class Slider():
                 self.posicionEjeX[eje]+=self.movimiento
     #A desarrollar Mario
     def objetivo_alcanzado(self):
-        
-        #Instanciamos un objeto objetivo para poder acceder sus atributos
-        objetivo = ObjetivoSimple()
-        ejeX_objetivo = objetivo.posicionEjeX
-        ejeY_objetivo = objetivo.posicionEjeY
-
         #Evaluamos la condición de cuando se choquen
-        if self.posicionEjeX == ejeX_objetivo and self.posicionEjeY == ejeY_objetivo:
-            print("He tocado un objetivo")
+        for i in range(0, len(self.objetivos) - 1):
+            if self.posicionEjeX[0] == self.objetivos[i].posicionEjeX and self.posicionEjeY[0] == self.objetivos[i].posicionEjeY:
+                #Elimina el objetivo alcanzado por la cabeza del slider
+                print(self.objetivos)
+                self.longitud=self.longitud+1
+                self.posicionEjeX.append(self.colaX)
+                self.posicionEjeY.append(self.colaY)
+                self.objetivos.pop(i)
+                
             
