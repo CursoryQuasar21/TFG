@@ -3,6 +3,8 @@ from objetivo import ObjetivoSimple
 class Slider():
     #Array que guarda instancias de objetivos
     objetivos = []
+    # Array que guarda instancias de obstaculos
+    obstaculos = []
     #Dimensiones del mapa
     celdasX=0
     celdasY=0
@@ -60,16 +62,39 @@ class Slider():
                 self.posicionEjeX[eje]=0
             else:
                 self.posicionEjeX[eje]+=self.movimiento
-    #A desarrollar Mario
+        if self.direccion!="ninguna":
+            for i in range(0, len(self.objetivos)-1):
+                if self.posicionEjeX[0]==self.objetivos[i].posicionEjeX and self.posicionEjeY[0]==self.objetivos[i].posicionEjeY:
+                    self.objetivo_alcanzado()
+            for i in range(0, len(self.obstaculos)-1):
+                if self.posicionEjeX[0]==self.obstaculos[i].posicionEjeX and self.posicionEjeY[0]==self.obstaculos[i].posicionEjeY:
+                    self.obstaculo_alcanzado()
     def objetivo_alcanzado(self):
         #Evaluamos la condición de cuando se choquen
-        for i in range(0, len(self.objetivos) - 1):
+        verificadoImpacto=False
+        objetivoAlcanzado = 0
+        for i in range(0, len(self.objetivos)):
             if self.posicionEjeX[0] == self.objetivos[i].posicionEjeX and self.posicionEjeY[0] == self.objetivos[i].posicionEjeY:
                 #Elimina el objetivo alcanzado por la cabeza del slider
-                print(self.objetivos)
-                self.longitud=self.longitud+1
-                self.posicionEjeX.append(self.colaX)
-                self.posicionEjeY.append(self.colaY)
-                self.objetivos.pop(i)
-                
-            
+                objetivoAlcanzado=i
+                verificadoImpacto=True
+        if verificadoImpacto:
+            self.longitud=self.longitud+1
+            self.posicionEjeX.append(self.colaX)
+            self.posicionEjeY.append(self.colaY)
+            self.objetivos.pop(objetivoAlcanzado)
+
+    def obstaculo_alcanzado(self):
+        # Evaluamos la condición de cuando se choquen
+        verificadoImpacto = False
+        obstaculoAlcanzado = 0
+        for i in range(0,len(self.obstaculos)):
+            if self.posicionEjeX[0] == self.obstaculos[i].posicionEjeX and self.posicionEjeY[0] == self.obstaculos[i].posicionEjeY:
+                # Elimina el objetivo alcanzado por la cabeza del slider
+                obstaculoAlcanzado = i
+                verificadoImpacto = True
+        if verificadoImpacto:
+            self.longitud = self.longitud - 1
+            self.posicionEjeX.pop(obstaculoAlcanzado-1)
+            self.posicionEjeY.pop(obstaculoAlcanzado-1)
+            self.obstaculos.pop(obstaculoAlcanzado-1)

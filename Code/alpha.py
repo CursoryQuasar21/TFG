@@ -1,13 +1,12 @@
 import pygame
 import numpy as np
+import random
 import time
 import keyboard as kb
 from objetivo import ObjetivoSimple
-import sys
-#Importamos los elementos que necesia nuestro programa
-
-#Crea la pantalla de nuestro juego
+from obstaculo import ObstaculoSimple
 from sliders import Slider
+import sys
 
 pygame.init()
 #Configuramos las dimensiones de la pantalla
@@ -15,7 +14,7 @@ width,height=600,600
 screen=pygame.display.set_mode((height,width))
 #Congiguramos el color de fondo
 #Con una intensidad los canales de color(Para formar colores en funcion de los primarios)
-bg=25,25,75
+bg=25,25,25
 #Cambiamos el color de fondo por el elegido
 screen.fill(bg)
 #Numero de celdas en los ejes x e y
@@ -28,13 +27,16 @@ gameState=np.zeros((nxC,nyC))
 #Estado de la celda. Muerta=0, Objetivo=1, Slider=2
 #Creamos los objetivos
 lista_Objetivos=[]
-objetivo1=ObjetivoSimple(1,1,0)
-objetivo2=ObjetivoSimple(2,7,0)
-lista_Objetivos.append(objetivo1)
-lista_Objetivos.append(objetivo2)
+lista_Obstaculos=[]
+for i in range(0,random.randrange(round((nxC*nyC)/10))):
+    objetivo=ObjetivoSimple(random.randrange(nxC),random.randrange(nyC),0)
+    lista_Objetivos.append(objetivo)
+for i in range(0, random.randrange(round((nxC * nyC) / 10))):
+    obstaculo = ObstaculoSimple(random.randrange(nxC), random.randrange(nyC), 0)
+    lista_Obstaculos.append(obstaculo)
 
 #Instanciar el slider
-slider=Slider(3,3,1,1)
+slider=Slider(3,3,2,1)
 slider.celdasX = nxC
 slider.celdasY = nyC
 slider.colaX=slider.posicionEjeX[0]
@@ -54,7 +56,10 @@ for i in range(0, slider.longitud):
 for i in range(0, len(lista_Objetivos)):
     gameState[lista_Objetivos[i].posicionEjeX, lista_Objetivos[i].posicionEjeY] = 1
     slider.objetivos.append(lista_Objetivos[i])
-
+#Pintamos los obstaculos
+for i in range(0, len(lista_Obstaculos)):
+    gameState[lista_Obstaculos[i].posicionEjeX, lista_Obstaculos[i].posicionEjeY] = 3
+    slider.obstaculos.append(lista_Obstaculos[i])
 
 #Flujo de ejecucion
 #En desarrollo, para poder pararlo en un futuro
@@ -79,7 +84,6 @@ while True:
     for event in ev:
         # Evento de teclado
         if event.type==pygame.KEYDOWN:
-            print(event.key)
             if event.key == pygame.K_SPACE:
                 pauseEcpect=not  pauseEcpect
             #Filtramos de todas las teclas del teclado las que nos interesa para movernos(w,a,s,d,flechitas)
@@ -118,11 +122,6 @@ while True:
             slider.colaY=varY
     slider.colaX = slider.posicionEjeX[0]
     slider.colaY = slider.posicionEjeY[0]
-    '''if slider>1:
-        for i in range(1, slider.longitud):
-            newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
-            slider.cambiaDireccion(i, slider.direccion)
-            slider'''
     #Dibujamos el tablero
     for y in range(0, nxC):
         for x in range(0, nyC):
@@ -145,6 +144,9 @@ while True:
             #Slider
             elif newGameState[x,y]==2:
                 pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
+
+            else:
+                pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
 
     #Método que gestiona colisiones del slider con objetivos
     slider.objetivo_alcanzado()
