@@ -95,6 +95,6 @@ class Slider():
                 verificadoImpacto = True
         if verificadoImpacto:
             self.longitud = self.longitud - 1
-            self.posicionEjeX.pop(obstaculoAlcanzado-1)
-            self.posicionEjeY.pop(obstaculoAlcanzado-1)
-            self.obstaculos.pop(obstaculoAlcanzado-1)
+            self.posicionEjeX.pop()
+            self.posicionEjeY.pop()
+            self.obstaculos.pop(obstaculoAlcanzado)

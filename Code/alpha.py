@@ -23,7 +23,7 @@ nxC,nyC=10,10
 dimCW=width/nxC
 dimCH=height/nyC
 #Iniciamos todas las celdas del juego con un valor de 0, es decir, muerta.
-gameState=np.zeros((nxC,nyC))
+gameState=np.zeros((nyC,nxC))
 #Estado de la celda. Muerta=0, Objetivo=1, Slider=2
 #Creamos los objetivos
 lista_Objetivos=[]
@@ -36,7 +36,7 @@ for i in range(0, random.randrange(round((nxC * nyC) / 10))):
     lista_Obstaculos.append(obstaculo)
 
 #Instanciar el slider
-slider=Slider(3,3,2,1)
+slider=Slider(3,3,3,1)
 slider.celdasX = nxC
 slider.celdasY = nyC
 slider.colaX=slider.posicionEjeX[0]
@@ -60,7 +60,6 @@ for i in range(0, len(lista_Objetivos)):
 for i in range(0, len(lista_Obstaculos)):
     gameState[lista_Obstaculos[i].posicionEjeX, lista_Obstaculos[i].posicionEjeY] = 3
     slider.obstaculos.append(lista_Obstaculos[i])
-
 #Flujo de ejecucion
 #En desarrollo, para poder pararlo en un futuro
 pauseEcpect=False
@@ -75,6 +74,7 @@ while True:
             
     #Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
     newGameState=np.copy(gameState)
+
     # Añadir un tiempo de espera para que el programa vaya mas lento
     time.sleep(0.1)
     #Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
@@ -84,7 +84,7 @@ while True:
     for event in ev:
         # Evento de teclado
         if event.type==pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_p:
                 pauseEcpect=not  pauseEcpect
             #Filtramos de todas las teclas del teclado las que nos interesa para movernos(w,a,s,d,flechitas)
             #Teclas W y Up
@@ -104,49 +104,57 @@ while True:
                 if slider.direccion != "derecha" and slider.direccion!="izquierda":
                     slider.direccion="derecha"
 
-    #Automatizamos la direccion, para que el slider siga con la direccion establecida
-    newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 0
-    slider.cambiaDireccion(0, slider.direccion)
-    newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 2
-    if slider.longitud>1 and slider.direccion!="ninguna":
-        varX = 0
-        varY = 0
-        for i in range(1, slider.longitud):
-            newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
-            varX=slider.posicionEjeX[i]
-            varY=slider.posicionEjeY[i]
-            slider.posicionEjeX[i]=slider.colaX
-            slider.posicionEjeY[i] = slider.colaY
-            newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 2
-            slider.colaX=varX
-            slider.colaY=varY
-    slider.colaX = slider.posicionEjeX[0]
-    slider.colaY = slider.posicionEjeY[0]
-    #Dibujamos el tablero
+    # Automatizamos la direccion, para que el slider siga con la direccion establecida
+    if slider.direccion != "ninguna":
+        newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 0
+        slider.cambiaDireccion(0, slider.direccion)
+        newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 2
+        if slider.longitud > 1:
+            varX = 0
+            varY = 0
+            for i in range(1, slider.longitud):
+                newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
+                varX = slider.posicionEjeX[i]
+                varY = slider.posicionEjeY[i]
+                slider.posicionEjeX[i] = slider.colaX
+                slider.posicionEjeY[i] = slider.colaY
+                newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 2
+                slider.colaX = varX
+                slider.colaY = varY
+        slider.colaX = slider.posicionEjeX[0]
+        slider.colaY = slider.posicionEjeY[0]
+        newGameState[slider.colaX, slider.colaY] = 0
+    # Dibujamos el tablero
     for y in range(0, nxC):
         for x in range(0, nyC):
-            #Creamos los cuadrados de cada celda a dibujar
-            poly=[((x)   * dimCW, y * dimCH),
-                  ((x+1) * dimCW, y * dimCH),
-                  ((x+1) * dimCW, (y+1) * dimCH),
-                  ((x)   * dimCW, (y+1) * dimCH)]
-            pygame.draw.polygon(screen,(128,128,18),poly,1)
-
-            #Dibujamos la celda por cada par de x e y
-            #Celda muerta
-            if newGameState[x,y]==0:
+            # if not pauseEcpect:
+            # Creamos los cuadrados de cada celda a dibujar
+            poly = [((x) * dimCW, y * dimCH),
+                    ((x + 1) * dimCW, y * dimCH),
+                    ((x + 1) * dimCW, (y + 1) * dimCH),
+                    ((x) * dimCW, (y + 1) * dimCH)]
+            # Dibujamos la celda por cada par de x e y
+            # Celda muerta
+            if newGameState[x, y] == 0:
                 pygame.draw.polygon(screen, (128, 18, 128), poly, 1)
-            
-            #Objetivo
-            elif newGameState[x,y]==1:
+
+            # Objetivo
+            elif newGameState[x, y] == 1:
                 pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
 
-            #Slider
-            elif newGameState[x,y]==2:
+            # Slider
+            elif newGameState[x, y] == 2:
                 pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
 
             else:
                 pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
+
+            pygame.draw.polygon(screen, (128, 128, 18), poly, 1)
+
+
+
+
+
 
     #Método que gestiona colisiones del slider con objetivos
     slider.objetivo_alcanzado()
@@ -157,4 +165,3 @@ while True:
     
     
     pygame.display.flip()
-    
