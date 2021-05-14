@@ -29,13 +29,6 @@ class Slider():
         self.colaX=ejeX
         self.colaY=ejeY
 
-    #En desarrollo
-    def registraObjetivos(self, ejesX, ejesY):
-        for i in ejesX:
-            self.posicionObjetivoEjeX[i]=ejesX[i]
-        for i in ejesY:
-            self.posicionObjetivoEjeX[i]=ejesY[i]
-
     #En desarrollo, hay que mirar el funcionamiento cuando la velocidad es superior a 1
     def cambiaDireccion(self,eje,direccion):
         if direccion=="arriba":
