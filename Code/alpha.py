@@ -191,6 +191,7 @@ while True:
                     pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
         #Actualizamos la puntuacion
         if slider.longitud!=linicial:
+            score=slider.longitud-linicial
             if score>highScore:
                 highScore=score
             puntuacion=fuente.render("Score: "+str(slider.longitud-linicial)+"      High Score: "+ str(highScore),0,(255,255,255))
