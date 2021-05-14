@@ -4,10 +4,9 @@ class ObjetivoSimple():
     movimiento=0
     estado=1
 
-    def __init__(self,ejeX,ejeY,movimiento):
+    def __init__(self,ejeX,ejeY):
         self.posicionEjeX=ejeX
         self.posicionEjeY=ejeY
-        self.movimiento=movimiento
     
     #Método para añadir dificultad al juego
     #Según aumente la dificultad se moverá más rápido

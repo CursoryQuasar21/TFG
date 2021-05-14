@@ -24,57 +24,90 @@ dimCW=width/nxC
 dimCH=height/nyC
 #Iniciamos todas las celdas del juego con un valor de 0, es decir, muerta.
 gameState=np.zeros((nyC,nxC))
-#Estado de la celda. Muerta=0, Objetivo=1, Slider=2
-#Creamos los objetivos
-lista_Objetivos=[]
-lista_Obstaculos=[]
-for i in range(0,random.randrange(round((nxC*nyC)/10))):
-    objetivo=ObjetivoSimple(random.randrange(nxC),random.randrange(nyC),0)
-    lista_Objetivos.append(objetivo)
-for i in range(0, random.randrange(round((nxC * nyC) / 10))):
-    obstaculo = ObstaculoSimple(random.randrange(nxC), random.randrange(nyC), 0)
-    lista_Obstaculos.append(obstaculo)
+#Instanciamos el marcador
+fuente=pygame.font.SysFont("Arial",30)
+puntuacion=fuente.render("Score: 0",0,(200,60,80))
 
+#Estado de la celda. Muerta=0, Objetivo=1, Slider=2
 #Instanciar el slider
-slider=Slider(3,3,3,1)
+slider=Slider(nxC//2,nyC//2,2,1)
 slider.celdasX = nxC
 slider.celdasY = nyC
-slider.colaX=slider.posicionEjeX[0]
-slider.colaY=slider.posicionEjeY[0]
-slider.posicionEjeX.append(3)
-slider.posicionEjeY.append(2)
-slider.posicionEjeX.append(3)
-slider.posicionEjeY.append(1)
-slider.posicionEjeX.append(3)
-slider.posicionEjeY.append(0)
-
+slider.posicionEjeX.append(slider.posicionEjeX[0]-1)
+slider.posicionEjeY.append(slider.posicionEjeY[0])
+linicial=slider.longitud
 #Pintamos el slider
 for i in range(0, slider.longitud):
     gameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 2
 
-#Pintamos los objetivo
-for i in range(0, len(lista_Objetivos)):
-    gameState[lista_Objetivos[i].posicionEjeX, lista_Objetivos[i].posicionEjeY] = 1
-    slider.objetivos.append(lista_Objetivos[i])
-#Pintamos los obstaculos
-for i in range(0, len(lista_Obstaculos)):
-    gameState[lista_Obstaculos[i].posicionEjeX, lista_Obstaculos[i].posicionEjeY] = 3
-    slider.obstaculos.append(lista_Obstaculos[i])
+#Creamos los objetivos
+lista_Objetivos=[]
+
+lista_Obstaculos=[]
+
+for obj in range((nxC*nyC)//10):
+    verificarCordenada=True
+    while verificarCordenada:
+        ejeX = random.randrange(nxC)
+        ejeY = random.randrange(nyC)
+        if len(lista_Objetivos)==0:
+            contador = 0
+            for s in range(slider.longitud):
+                if ejeX!=slider.posicionEjeX[s] or ejeY!=slider.posicionEjeY[s]:
+                    contador+=1
+            if contador==slider.longitud:
+                lista_Objetivos.append(ObjetivoSimple(ejeX, ejeY))
+                verificarCordenada = False
+                gameState[lista_Objetivos[obj].posicionEjeX, lista_Objetivos[obj].posicionEjeY] = 1
+        else:
+            for s in range(slider.longitud):
+                contador = 0
+                for objz in range(len(lista_Objetivos)):
+                    if (ejeX!=slider.posicionEjeX[s] or ejeY!=slider.posicionEjeY[s]) and (ejeX!=lista_Objetivos[objz].posicionEjeX or ejeY!=lista_Objetivos[objz].posicionEjeY):
+                      contador+=1
+            if contador == len(lista_Objetivos):
+                lista_Objetivos.append(ObjetivoSimple(ejeX, ejeY))
+                verificarCordenada = False
+                gameState[lista_Objetivos[obj].posicionEjeX, lista_Objetivos[obj].posicionEjeY] = 1
+
+for obs in range(0, 10):
+    verificarCordenada=True
+    while verificarCordenada:
+        ejeX = random.randrange(nxC)
+        ejeY = random.randrange(nyC)
+        if len(lista_Obstaculos)==0:
+            contador = 0
+            for s in range(slider.longitud):
+                for obj in range(len(lista_Objetivos)):
+                    if (ejeX!=slider.posicionEjeX[s] or ejeY!=slider.posicionEjeY[s]) and (ejeX!=lista_Objetivos[obj].posicionEjeX or ejeY!=lista_Objetivos[obj].posicionEjeY):
+                        contador+=1
+            if contador==(slider.longitud*len(lista_Objetivos)):
+                lista_Obstaculos.append(ObjetivoSimple(ejeX, ejeY))
+                verificarCordenada = False
+                gameState[lista_Obstaculos[obs].posicionEjeX, lista_Obstaculos[obs].posicionEjeY] = 3
+        else:
+            for s in range(slider.longitud):
+                contador = 0
+                for obj in range(len(lista_Objetivos)):
+                    for obsz in range(len(lista_Obstaculos)):
+                        if (ejeX!=slider.posicionEjeX[s] or ejeY!=slider.posicionEjeY[s]) \
+                                and (ejeX!=lista_Objetivos[objz].posicionEjeX or ejeY!=lista_Objetivos[objz].posicionEjeY) \
+                                and (ejeX!=lista_Obstaculos[obsz].posicionEjeX or ejeY!=lista_Obstaculos[obsz].posicionEjeY):
+                            contador+=1
+            if contador == len(lista_Objetivos):
+                lista_Obstaculos.append(ObstaculoSimple(ejeX, ejeY))
+                verificarCordenada = False
+                gameState[lista_Obstaculos[obs].posicionEjeX, lista_Obstaculos[obs].posicionEjeY] = 3
+
+
+slider.objetivos=lista_Objetivos
+slider.obstaculos=lista_Obstaculos
 #Flujo de ejecucion
 #En desarrollo, para poder pararlo en un futuro
 pauseEcpect=False
 while True:
-
-    #Bucle que gestiona el cierre de la ventana
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-            
-    #Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
-    newGameState=np.copy(gameState)
-
+    # Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
+    newGameState = np.copy(gameState)
     # Añadir un tiempo de espera para que el programa vaya mas lento
     time.sleep(0.1)
     #Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
@@ -82,6 +115,10 @@ while True:
     #Eventos de Teclado y raton
     ev=pygame.event.get()
     for event in ev:
+        #Evento de cierre de ventana mediante raton
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
         # Evento de teclado
         if event.type==pygame.KEYDOWN:
             if event.key == pygame.K_p:
@@ -109,21 +146,25 @@ while True:
         newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 0
         slider.cambiaDireccion(0, slider.direccion)
         newGameState[slider.posicionEjeX[0], slider.posicionEjeY[0]] = 2
-        if slider.longitud > 1:
-            varX = 0
-            varY = 0
-            for i in range(1, slider.longitud):
-                newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
-                varX = slider.posicionEjeX[i]
-                varY = slider.posicionEjeY[i]
-                slider.posicionEjeX[i] = slider.colaX
-                slider.posicionEjeY[i] = slider.colaY
-                newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 2
-                slider.colaX = varX
-                slider.colaY = varY
-        slider.colaX = slider.posicionEjeX[0]
-        slider.colaY = slider.posicionEjeY[0]
-        newGameState[slider.colaX, slider.colaY] = 0
+        if slider.estado == 0:
+            break
+        else:
+            if slider.longitud > 1 and slider.estado!=0:
+                varX = 0
+                varY = 0
+                for i in range(1, slider.longitud):
+                    newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 0
+                    varX = slider.posicionEjeX[i]
+                    varY = slider.posicionEjeY[i]
+                    slider.posicionEjeX[i] = slider.colaX
+                    slider.posicionEjeY[i] = slider.colaY
+                    newGameState[slider.posicionEjeX[i], slider.posicionEjeY[i]] = 2
+                    slider.colaX = varX
+                    slider.colaY = varY
+            slider.colaX = slider.posicionEjeX[0]
+            slider.colaY = slider.posicionEjeY[0]
+
+
     # Dibujamos el tablero
     for y in range(0, nxC):
         for x in range(0, nyC):
@@ -137,31 +178,25 @@ while True:
             # Celda muerta
             if newGameState[x, y] == 0:
                 pygame.draw.polygon(screen, (128, 18, 128), poly, 1)
-
             # Objetivo
             elif newGameState[x, y] == 1:
                 pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
-
             # Slider
             elif newGameState[x, y] == 2:
                 pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
-
             else:
                 pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
+    #Actualizamos la puntuacion
+    if slider.longitud!=linicial:
+        puntuacion=fuente.render("Score: "+str(slider.longitud),0,(255,255,255))
 
-            pygame.draw.polygon(screen, (128, 128, 18), poly, 1)
-
-
-
-
-
-
-    #Método que gestiona colisiones del slider con objetivos
-    slider.objetivo_alcanzado()
-            #Actualizamos el estado del juego
+    screen.blit(puntuacion, (65, 40))
+    #Actualizamos el estado del juego
     gameState=np.copy(newGameState)
     #Actualizamos la pantalla
-    
-    
-    
     pygame.display.flip()
+print("ESTAS......!!!!!")
+print("MUERTO!!!!!")
+print("MUERTO!!!!!")
+print("MUERTO!!!!!")
+print("puto gilipollas")
