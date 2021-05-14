@@ -18,7 +18,7 @@ bg=25,25,25
 #Cambiamos el color de fondo por el elegido
 screen.fill(bg)
 #Numero de celdas en los ejes x e y
-nxC,nyC=10,10
+nxC,nyC=20,20
 #Dimensiones de las celdas en funcion del numero y cantidad de las mismas
 dimCW=width/nxC
 dimCH=height/nyC
@@ -70,7 +70,7 @@ for obj in range((nxC*nyC)//10):
                 verificarCordenada = False
                 gameState[lista_Objetivos[obj].posicionEjeX, lista_Objetivos[obj].posicionEjeY] = 1
 
-for obs in range(0, 10):
+for obs in range((nxC*nyC)//10):
     verificarCordenada=True
     while verificarCordenada:
         ejeX = random.randrange(nxC)
