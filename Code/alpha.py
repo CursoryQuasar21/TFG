@@ -184,32 +184,33 @@ while True:
                     slider.colaY = slider.posicionEjeY[0]
 
 
-            # Dibujamos el tablero
-            for y in range(0, nxC):
-                for x in range(0, nyC):
-                    # if not pauseEcpect:
-                    # Creamos los cuadrados de cada celda a dibujar
-                    poly = [((x) * dimCW, y * dimCH),
-                            ((x + 1) * dimCW, y * dimCH),
-                            ((x + 1) * dimCW, (y + 1) * dimCH),
-                            ((x) * dimCW, (y + 1) * dimCH)]
-                    # Dibujamos la celda por cada par de x e y
-                    # Celda muerta
-                    if newGameState[x, y] == 0:
-                        pygame.draw.polygon(screen, (128, 18, 128), poly, 1)
-                    # Objetivo
-                    elif newGameState[x, y] == 1:
-                        pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
-                    # Slider
-                    elif newGameState[x, y] == 2:
-                        pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
-                    else:
-                        pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
-            #Actualizamos la puntuacion
-            if slider.longitud!=linicial:
-                if score>highScore:
-                    highScore=score
-                puntuacion=fuente.render("Score: "+str(slider.longitud-linicial)+"      High Score: "+ str(highScore),0,(255,255,255))
+        # Dibujamos el tablero
+        for y in range(0, nxC):
+            for x in range(0, nyC):
+                # if not pauseEcpect:
+                # Creamos los cuadrados de cada celda a dibujar
+                poly = [((x) * dimCW, y * dimCH),
+                        ((x + 1) * dimCW, y * dimCH),
+                        ((x + 1) * dimCW, (y + 1) * dimCH),
+                        ((x) * dimCW, (y + 1) * dimCH)]
+                # Dibujamos la celda por cada par de x e y
+                # Celda muerta
+                if newGameState[x, y] == 0:
+                    pygame.draw.polygon(screen, (128, 18, 128), poly, 1)
+                # Objetivo
+                elif newGameState[x, y] == 1:
+                    pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
+                # Slider
+                elif newGameState[x, y] == 2:
+                    pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
+                else:
+                    pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
+        #Actualizamos la puntuacion
+        if slider.longitud!=linicial:
+            score=slider.longitud-linicial
+            if score>highScore:
+                highScore=score
+            puntuacion=fuente.render("Score: "+str(slider.longitud-linicial)+"      High Score: "+ str(highScore),0,(255,255,255))
 
             screen.blit(puntuacion, (65, 40))
             #Actualizamos el estado del juego
