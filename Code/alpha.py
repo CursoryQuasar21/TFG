@@ -1,6 +1,3 @@
-import tkinter
-import tkinter as tk
-
 
 from partida import Partida
 
