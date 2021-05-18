@@ -77,6 +77,9 @@ class Slider():
             for i in range(len(self.obstaculos)):
                 if self.posicionEjeX[0] == self.obstaculos[i].posicionEjeX and self.posicionEjeY[0] == self.obstaculos[i].posicionEjeY:
                     self.estado = 0
+            for i in range(1,self.longitud):
+                if self.posicionEjeX[0] == self.posicionEjeX[i] and self.posicionEjeY[0] == self.posicionEjeY[i]:
+                    self.estado = 0
     def objetivo_alcanzado(self,objetivoAlcanzado):
         #Evaluamos la condición de cuando se choquen
         self.longitud=self.longitud+1
