@@ -28,12 +28,17 @@ class Slider():
         self.movimiento=movimiento
         self.colaX=ejeX
         self.colaY=ejeY
+        if longitud>1:
+            for i in range(self.longitud):
+                self.posicionEjeX.append(self.posicionEjeX[i])
+                self.posicionEjeY.append(self.posicionEjeY[i-1]-1)
+
 
     #En desarrollo, hay que mirar el funcionamiento cuando la velocidad es superior a 1
     def cambiaDireccion(self,eje,direccion):
         if direccion=="arriba":
             self.direccion="arriba"
-            self.colaY=self.posicionEjeY[eje]
+            self.colaY=self.posicionEjeY[0]
             if self.posicionEjeY[eje]==0 or self.posicionEjeY[eje]<(self.posicionEjeY[eje]-self.movimiento):
                 self.posicionEjeY[eje]=self.celdasY-1
             else:
@@ -69,7 +74,7 @@ class Slider():
                     marcadorObjetivo=i
             if verificarObjetivo:
                 self.objetivo_alcanzado(marcadorObjetivo)
-            for i in range(len(self.objetivos)):
+            for i in range(len(self.obstaculos)):
                 if self.posicionEjeX[0] == self.obstaculos[i].posicionEjeX and self.posicionEjeY[0] == self.obstaculos[i].posicionEjeY:
                     self.estado = 0
     def objetivo_alcanzado(self,objetivoAlcanzado):
