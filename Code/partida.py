@@ -24,7 +24,7 @@ class Partida():
         self.nyC = nyC
         #self.nombreJugador=print(input("Introduce tu nombre, Jugador"))
         #nivel=print(int(input("Con que nivel quieres empezar:1-Facil 2-Medio 3-Dificil 4-Imposible")))
-        nivel=4
+        nivel= 1
         if nivel == 1:
             self.nivel = "facil"
             self.time = 0.15
