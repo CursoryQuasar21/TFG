@@ -1,7 +1,6 @@
 import random
 import pygame
 import time
-import time
 import sys
 import numpy as np
 import keyboard as kb
@@ -20,7 +19,7 @@ class Partida():
     time=1
     elemento = 0
     #Creamos el constructor con todo lo que va ha intervenir en la partida
-    def __init__(self, height, width, nxC, nyC, higscore):
+    def __init__(self, height, width, nxC, nyC, highscore):
         self.nxC = nxC
         self.nyC = nyC
         #self.nombreJugador=print(input("Introduce tu nombre, Jugador"))
@@ -41,9 +40,9 @@ class Partida():
 
         self.gameState=np.zeros((nyC,nxC))
         self.elemento=Elementos(nxC,nyC,self.nivel)
-        self.partida(height, width, higscore)
+        self.partida(height, width, highscore)
 
-    def partida(self, height, width, higscore):
+    def partida(self, height, width, highscore):
         inicial=self.elemento.slider.longitud
         #
         #
@@ -86,7 +85,7 @@ class Partida():
             if self.nivel=="facil":
                 time.sleep(0.2)
             if self.nivel=="medio":
-                time.sleep(0.1)
+                time.sleep(0.2)
             if self.nivel=="dificil":
                 time.sleep(0.08)
             if self.nivel=="imposible":
@@ -131,7 +130,6 @@ class Partida():
             #
             #Autmatizamos los movimientos
             #Automatizamos la direccion de los objetivos
-
             for i in range(len(self.elemento.lista_Objetivos)):
                 newGameState[self.elemento.lista_Objetivos[i].posicionEjeX, self.elemento.lista_Objetivos[i].posicionEjeY] = 0
                 self.elemento.lista_Objetivos[i].cambiaDireccion(self.elemento.lista_Objetivos[i].direccion)

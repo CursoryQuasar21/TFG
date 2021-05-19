@@ -19,29 +19,37 @@ class ObstaculoSimple():
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
     def cambiaDireccion(self, direccion):
-        if direccion != "ninguna":
-            if direccion == "arriba":
-                if self.posicionEjeY == 0 or self.posicionEjeY < (self.posicionEjeY - self.movimiento):
-                    self.posicionEjeY = self.celdasY - 1
+        if self.direccion != "ninguna":
+            if self.direccion == "arriba":
+                if 0 > (self.posicionEjeY - self.movimiento):
+                    if self.posicionEjeY == 0:
+                        self.posicionEjeY = self.celdasY - self.movimiento
+                    else:
+                        self.posicionEjeY = self.celdasY - ((0 - self.posicionEjeY) + self.movimiento)
                 else:
                     self.posicionEjeY -= self.movimiento
-            elif direccion == "abajo":
-                self.colaY = self.posicionEjeY
-                if self.posicionEjeY == self.celdasY - 1 or self.posicionEjeY > (self.posicionEjeY + self.movimiento):
-                    self.posicionEjeY = 0
+            elif self.direccion == "abajo":
+                if self.celdasY <= (self.posicionEjeY + self.movimiento):
+                    if self.posicionEjeY == self.celdasY:
+                        self.posicionEjeY = self.movimiento
+                    else:
+                        self.posicionEjeY = ((self.posicionEjeY - self.celdasY) + self.movimiento)
                 else:
                     self.posicionEjeY += self.movimiento
-            elif direccion == "izquierda":
-                self.colaX = self.posicionEjeX
-                if self.posicionEjeX == 0 or self.posicionEjeX < (self.posicionEjeX - self.movimiento):
-                    self.posicionEjeX = self.celdasX - 1
+            elif self.direccion == "izquierda":
+                if 0 > (self.posicionEjeX - self.movimiento):
+                    if self.posicionEjeX == 0:
+                        self.posicionEjeX = self.celdasX - self.movimiento
+                    else:
+                        self.posicionEjeX = self.celdasX - ((0 - self.posicionEjeX) + self.movimiento)
                 else:
                     self.posicionEjeX -= self.movimiento
-            elif direccion == "derecha":
-                self.colaX = self.posicionEjeX
-                if self.posicionEjeX == self.celdasX - 1 or self.posicionEjeX > (
-                        self.posicionEjeX + self.movimiento):
-                    self.posicionEjeX = 0
+            elif self.direccion == "derecha":
+                if self.celdasX <= (self.posicionEjeX + self.movimiento):
+                    if self.posicionEjeX == self.celdasX:
+                        self.posicionEjeX = self.movimiento
+                    else:
+                        self.posicionEjeX = ((self.posicionEjeX - self.celdasX) + self.movimiento)
                 else:
                     self.posicionEjeX += self.movimiento
 
@@ -60,35 +68,43 @@ class ObstaculoMedio():
         self.celdasX = celdasX
         self.celdasY = celdasY
         lista_Direcciones = ["arriba", "abajo", "izquierda", "derecha"]
-        direccion = random.randrange(3)
+        direccion = random.randrange(4)
         self.direccion = lista_Direcciones[direccion]
 
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
     def cambiaDireccion(self, direccion):
-        if direccion != "ninguna":
-            if direccion == "arriba":
-                if self.posicionEjeY == 0 or self.posicionEjeY < (self.posicionEjeY - self.movimiento):
-                    self.posicionEjeY = self.celdasY - 1
+        if self.direccion != "ninguna":
+            if self.direccion == "arriba":
+                if 0 > (self.posicionEjeY - self.movimiento):
+                    if self.posicionEjeY == 0:
+                        self.posicionEjeY = self.celdasY - self.movimiento
+                    else:
+                        self.posicionEjeY = self.celdasY - ((0 - self.posicionEjeY) + self.movimiento)
                 else:
                     self.posicionEjeY -= self.movimiento
-            elif direccion == "abajo":
-                self.colaY = self.posicionEjeY
-                if self.posicionEjeY == self.celdasY - 1 or self.posicionEjeY > (self.posicionEjeY + self.movimiento):
-                    self.posicionEjeY = 0
+            elif self.direccion == "abajo":
+                if self.celdasY <= (self.posicionEjeY + self.movimiento):
+                    if self.posicionEjeY == self.celdasY:
+                        self.posicionEjeY = self.movimiento
+                    else:
+                        self.posicionEjeY = ((self.posicionEjeY - self.celdasY) + self.movimiento)
                 else:
                     self.posicionEjeY += self.movimiento
-            elif direccion == "izquierda":
-                self.colaX = self.posicionEjeX
-                if self.posicionEjeX == 0 or self.posicionEjeX < (self.posicionEjeX - self.movimiento):
-                    self.posicionEjeX = self.celdasX - 1
+            elif self.direccion == "izquierda":
+                if 0 > (self.posicionEjeX - self.movimiento):
+                    if self.posicionEjeX == 0:
+                        self.posicionEjeX = self.celdasX - self.movimiento
+                    else:
+                        self.posicionEjeX = self.celdasX - ((0 - self.posicionEjeX) + self.movimiento)
                 else:
                     self.posicionEjeX -= self.movimiento
-            elif direccion == "derecha":
-                self.colaX = self.posicionEjeX
-                if self.posicionEjeX == self.celdasX - 1 or self.posicionEjeX > (
-                        self.posicionEjeX + self.movimiento):
-                    self.posicionEjeX = 0
+            elif self.direccion == "derecha":
+                if self.celdasX <= (self.posicionEjeX + self.movimiento):
+                    if self.posicionEjeX == self.celdasX:
+                        self.posicionEjeX = self.movimiento
+                    else:
+                        self.posicionEjeX = ((self.posicionEjeX - self.celdasX) + self.movimiento)
                 else:
                     self.posicionEjeX += self.movimiento
 
@@ -106,36 +122,43 @@ class ObstaculoDificil():
         self.posicionEjeY = ejeY
         self.celdasX = celdasX
         self.celdasY = celdasY
-        lista_Direcciones = ["arriba", "abajo", "izquierda", "derecha"]
 
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
     def cambiaDireccion(self, direccion):
         lista_Direcciones = ["arriba", "abajo", "izquierda", "derecha"]
-        direccion = random.randrange(3)
+        direccion = random.randrange(4)
         self.direccion = lista_Direcciones[direccion]
-        if direccion != "ninguna":
-            if direccion == "arriba":
-                if self.posicionEjeY == 0 or self.posicionEjeY < (self.posicionEjeY - self.movimiento):
-                    self.posicionEjeY = self.celdasY - 1
+        if self.direccion != "ninguna":
+            if self.direccion == "arriba":
+                if 0 > (self.posicionEjeY - self.movimiento):
+                    if self.posicionEjeY == 0:
+                        self.posicionEjeY = self.celdasY - self.movimiento
+                    else:
+                        self.posicionEjeY = self.celdasY - ((0 - self.posicionEjeY) + self.movimiento)
                 else:
                     self.posicionEjeY -= self.movimiento
-            elif direccion == "abajo":
-                self.colaY = self.posicionEjeY
-                if self.posicionEjeY == self.celdasY - 1 or self.posicionEjeY > (self.posicionEjeY + self.movimiento):
-                    self.posicionEjeY = 0
+            elif self.direccion == "abajo":
+                if self.celdasY <= (self.posicionEjeY + self.movimiento):
+                    if self.posicionEjeY == self.celdasY:
+                        self.posicionEjeY = self.movimiento
+                    else:
+                        self.posicionEjeY = ((self.posicionEjeY - self.celdasY) + self.movimiento)
                 else:
                     self.posicionEjeY += self.movimiento
-            elif direccion == "izquierda":
-                self.colaX = self.posicionEjeX
-                if self.posicionEjeX == 0 or self.posicionEjeX < (self.posicionEjeX - self.movimiento):
-                    self.posicionEjeX = self.celdasX - 1
+            elif self.direccion == "izquierda":
+                if 0 > (self.posicionEjeX - self.movimiento):
+                    if self.posicionEjeX == 0:
+                        self.posicionEjeX = self.celdasX - self.movimiento
+                    else:
+                        self.posicionEjeX = self.celdasX - ((0 - self.posicionEjeX) + self.movimiento)
                 else:
                     self.posicionEjeX -= self.movimiento
-            elif direccion == "derecha":
-                self.colaX = self.posicionEjeX
-                if self.posicionEjeX == self.celdasX - 1 or self.posicionEjeX > (
-                        self.posicionEjeX + self.movimiento):
-                    self.posicionEjeX = 0
+            elif self.direccion == "derecha":
+                if self.celdasX <= (self.posicionEjeX + self.movimiento):
+                    if self.posicionEjeX == self.celdasX:
+                        self.posicionEjeX = self.movimiento
+                    else:
+                        self.posicionEjeX = ((self.posicionEjeX - self.celdasX) + self.movimiento)
                 else:
                     self.posicionEjeX += self.movimiento

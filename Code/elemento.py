@@ -129,7 +129,6 @@ class Elementos():
             ob3 = int(cantidadObstaculos - (ob1 + ob2))
 
         lista_ContadorObstaculos = [ob1, ob2, ob3]
-
         for obj in range(cantidadObstaculos):
             verificarCordenada = True
             contador = 0
@@ -172,4 +171,5 @@ class Elementos():
                             self.lista_Obstaculos.append(ObstaculoDificil(ejeX, ejeY, nxC, nyC))
                             lista_ContadorObstaculos[2] -= 1
                         verificarCordenada = False
+
         self.slider.obstaculos=self.lista_Obstaculos
