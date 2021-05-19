@@ -1,9 +1,7 @@
-import random
 import pygame
 import time
 import sys
 import numpy as np
-import keyboard as kb
 
 #modularizar, crear una clase, la clase partida va ha contener los elementos
 from elemento import Elementos
@@ -197,6 +195,19 @@ class Partida():
             self.gameState = np.copy(newGameState)
             # Actualizamos la pantalla
             pygame.display.flip()
-            if self.elemento.lista_Objetivos==0:
-                self.elemento.creadorObjetivos()
+            if len(self.elemento.lista_Objetivos) ==0:
+                if self.nivel=="facil":
+                    self.nivel="medio"
+                if self.nivel=="medio":
+                    self.nivel="dificil"
+                if self.nivel=="dificil":
+                    self.nivel="imposible"
+                else:
+                    self.nivel="imposible"
+                cantidadObjetivos = self.elemento.cantidadObjetivos(self.nivel,self.nxC,self.nyC)
+                cantidadObstaculos = self.elemento.cantidadObstaculos(self.nivel, self.nxC, self.nyC)
+                self.elemento.lista_Objetivos=[]
+                self.elemento.lista_Obstaculos=[]
+                self.elemento.creadorObjetivos(self.nivel,cantidadObjetivos,self.nxC,self.nyC)
+                self.elemento.creadorObstaculos(self.nivel, cantidadObstaculos, self.nxC, self.nyC)
         self.score=self.elemento.slider.longitud-inicial

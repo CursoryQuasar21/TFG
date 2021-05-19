@@ -1,7 +1,4 @@
-
 from partida import Partida
-
-
 
 
 lista_Puntuaciones=[]
@@ -9,6 +6,15 @@ highscore=0
 
 def puntuaciones(partida):
     contador=len(lista_Puntuaciones)
+    if partida.nivel=="facil":
+        partida.score=partida.score*1.25
+    if partida.nivel=="Medio":
+        partida.score=partida.score*1.5
+    if partida.nivel=="Dificil":
+        partida.score=partida.score*3
+    else:
+        partida.score=partida.score*5
+
     if len(lista_Puntuaciones)==0:
         lista_Puntuaciones.append(partida)
     else:

@@ -1,7 +1,6 @@
 import random
 
 
-
 class ObstaculoSimple():
     posicionEjeX = 0
     posicionEjeY = 0
