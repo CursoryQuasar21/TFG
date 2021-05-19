@@ -43,6 +43,30 @@ class Elementos():
         self.creadorObjetivos(nivel, cantidadObjetivos, nxC, nyC)
         self.creadorObstaculos(nivel, cantidadObstaculos, nxC, nyC)
 
+    def cantidadObjetivos(self,nivel,nxC,nyC):
+        cantidadObjetivos = (nxC * nyC) // (nxC + nyC)
+        if nivel == "facil":
+            cantidadObjetivos += 5
+        elif nivel == "medio":
+            cantidadObjetivos += 3
+        elif nivel == "dificil":
+            cantidadObjetivos += 1
+        else:
+            cantidadObjetivos -= 1
+        return cantidadObjetivos
+
+    def cantidadObstaculos(self,nivel,nxC,nyC):
+        cantidadObstaculos = (nxC * nyC) // (nxC + nyC)
+        if nivel == "facil":
+            cantidadObstaculos -= 3
+        elif nivel == "medio":
+            cantidadObstaculos += 1
+        elif nivel == "dificil":
+            cantidadObstaculos += 3
+        else:
+            cantidadObstaculos += 5
+        return cantidadObstaculos
+
     def creadorObjetivos(self, nivel, cantidadObjetivos, nxC, nyC):
         if nivel == "facil":
             ob1 = int(cantidadObjetivos - (cantidadObjetivos * 0.3))
@@ -63,6 +87,9 @@ class Elementos():
             ob2 = int((cantidadObjetivos - ob1) * 0.7)
             ob3 = int(cantidadObjetivos - (ob1 + ob2))
 
+
+        #lista_ContadorObjetivos = [1,0,0]
+        #for obj in range(1):
         lista_ContadorObjetivos = [ob1, ob2, ob3]
         for obj in range(cantidadObjetivos):
             verificarCordenada = True
@@ -107,7 +134,6 @@ class Elementos():
                             lista_ContadorObjetivos[2] -= 1
                         verificarCordenada = False
         self.slider.objetivos=self.lista_Objetivos
-
     def creadorObstaculos(self, nivel, cantidadObstaculos, nxC, nyC):
         if nivel == "facil":
             ob1 = int(cantidadObstaculos - (cantidadObstaculos * 0.3))

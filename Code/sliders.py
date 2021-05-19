@@ -1,7 +1,3 @@
-import time
-
-from objetivo import ObjetivoSimple
-from obstaculo import ObstaculoSimple
 class Slider():
     #Array que guarda instancias de objetivos
     objetivos = []

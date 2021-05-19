@@ -1,7 +1,6 @@
 import random
 
 
-
 class ObjetivoSimple():
     posicionEjeX=0
     posicionEjeY=0
