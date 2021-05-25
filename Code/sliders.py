@@ -17,14 +17,13 @@ class Slider():
     colaX=0
     colaY=0
 
-    def __init__(self,ejeX,ejeY,longitud,movimiento):
+    def __init__(self,ejeX,ejeY,movimiento):
         self.posicionEjeX=[ejeX]
         self.posicionEjeY=[ejeY]
-        self.longitud=longitud
         self.movimiento=movimiento
         self.colaX=ejeX
         self.colaY=ejeY
-        if longitud>1:
+        if self.longitud>1:
             for i in range(self.longitud):
                 self.posicionEjeX.append(self.posicionEjeX[i])
                 self.posicionEjeY.append(self.posicionEjeY[i-1]-1)
@@ -73,6 +72,7 @@ class Slider():
             for i in range(len(self.obstaculos)):
                 if self.posicionEjeX[0] == self.obstaculos[i].posicionEjeX and self.posicionEjeY[0] == self.obstaculos[i].posicionEjeY:
                     self.estado = 0
+            #Bucle que gestiona cuando se come a sí mismo
             for i in range(1,self.longitud):
                 if self.posicionEjeX[0] == self.posicionEjeX[i] and self.posicionEjeY[0] == self.posicionEjeY[i]:
                     self.estado = 0

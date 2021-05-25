@@ -15,26 +15,22 @@ class Elementos():
 
         if nivel == "facil":
             movimiento=0
-            longitud = 1
             cantidadObjetivos += 5
             cantidadObstaculos -= 3
         elif nivel == "medio":
             movimiento = 1
-            longitud = 2
             cantidadObjetivos += 3
             cantidadObstaculos += 1
         elif nivel == "dificil":
             movimiento = 2
-            longitud = 4
             cantidadObjetivos += 1
             cantidadObstaculos += 3
         else:
             movimiento = 3
-            longitud = 8
             cantidadObjetivos -= 1
             cantidadObstaculos += 5
         # Creamos la slider
-        self.slider = Slider(nxC // 2, nyC // 2, longitud, 1)
+        self.slider = Slider(nxC // 2, nyC // 2,1)
         self.slider.celdasX = nxC
         self.slider.celdasY = nyC
         # Creamos los elementos como objetivos y obstaculos
