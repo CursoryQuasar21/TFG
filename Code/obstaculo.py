@@ -11,15 +11,22 @@ class ObstaculoSimple():
     estado = 1
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
+        '''
+        :param ejeX: La posicion en el ejeX
+        :param ejeY: La posicion en el ejeY
+        :param celdasX: La cantidad de celdas del ejeX
+        :param celdasY: La cantidad de celdas del ejeY
+        '''
         self.posicionEjeX = ejeX
         self.posicionEjeY = ejeY
         self.celdasX = celdasX
         self.celdasY = celdasY
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
-    def cambiaDireccion(self, direccion):
+    def cambiaDireccion(self):
         if self.direccion != "ninguna":
             if self.direccion == "arriba":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if 0 > (self.posicionEjeY - self.movimiento):
                     if self.posicionEjeY == 0:
                         self.posicionEjeY = self.celdasY - self.movimiento
@@ -28,6 +35,7 @@ class ObstaculoSimple():
                 else:
                     self.posicionEjeY -= self.movimiento
             elif self.direccion == "abajo":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if self.celdasY <= (self.posicionEjeY + self.movimiento):
                     if self.posicionEjeY == self.celdasY:
                         self.posicionEjeY = self.movimiento
@@ -36,6 +44,7 @@ class ObstaculoSimple():
                 else:
                     self.posicionEjeY += self.movimiento
             elif self.direccion == "izquierda":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if 0 > (self.posicionEjeX - self.movimiento):
                     if self.posicionEjeX == 0:
                         self.posicionEjeX = self.celdasX - self.movimiento
@@ -44,6 +53,7 @@ class ObstaculoSimple():
                 else:
                     self.posicionEjeX -= self.movimiento
             elif self.direccion == "derecha":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if self.celdasX <= (self.posicionEjeX + self.movimiento):
                     if self.posicionEjeX == self.celdasX:
                         self.posicionEjeX = self.movimiento
@@ -62,19 +72,27 @@ class ObstaculoMedio():
     estado = 1
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
+        '''
+        :param ejeX: La posicion en el ejeX
+        :param ejeY: La posicion en el ejeY
+        :param celdasX: La cantidad de celdas del ejeX
+        :param celdasY: La cantidad de celdas del ejeY
+        '''
         self.posicionEjeX = ejeX
         self.posicionEjeY = ejeY
         self.celdasX = celdasX
         self.celdasY = celdasY
+        # Creo una lista con las diferentes direcciones y aleatoriamente se escoge una
         lista_Direcciones = ["arriba", "abajo", "izquierda", "derecha"]
         direccion = random.randrange(4)
         self.direccion = lista_Direcciones[direccion]
 
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
-    def cambiaDireccion(self, direccion):
+    def cambiaDireccion(self):
         if self.direccion != "ninguna":
             if self.direccion == "arriba":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if 0 > (self.posicionEjeY - self.movimiento):
                     if self.posicionEjeY == 0:
                         self.posicionEjeY = self.celdasY - self.movimiento
@@ -83,6 +101,7 @@ class ObstaculoMedio():
                 else:
                     self.posicionEjeY -= self.movimiento
             elif self.direccion == "abajo":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if self.celdasY <= (self.posicionEjeY + self.movimiento):
                     if self.posicionEjeY == self.celdasY:
                         self.posicionEjeY = self.movimiento
@@ -91,6 +110,7 @@ class ObstaculoMedio():
                 else:
                     self.posicionEjeY += self.movimiento
             elif self.direccion == "izquierda":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if 0 > (self.posicionEjeX - self.movimiento):
                     if self.posicionEjeX == 0:
                         self.posicionEjeX = self.celdasX - self.movimiento
@@ -99,6 +119,7 @@ class ObstaculoMedio():
                 else:
                     self.posicionEjeX -= self.movimiento
             elif self.direccion == "derecha":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if self.celdasX <= (self.posicionEjeX + self.movimiento):
                     if self.posicionEjeX == self.celdasX:
                         self.posicionEjeX = self.movimiento
@@ -117,6 +138,12 @@ class ObstaculoDificil():
     estado = 1
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
+        '''
+        :param ejeX: La posicion en el ejeX
+        :param ejeY: La posicion en el ejeY
+        :param celdasX: La cantidad de celdas del ejeX
+        :param celdasY: La cantidad de celdas del ejeY
+        '''
         self.posicionEjeX = ejeX
         self.posicionEjeY = ejeY
         self.celdasX = celdasX
@@ -124,12 +151,14 @@ class ObstaculoDificil():
 
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
-    def cambiaDireccion(self, direccion):
+    def cambiaDireccion(self):
+        # Creo una lista con las diferentes direcciones y aleatoriamente se escoge una
         lista_Direcciones = ["arriba", "abajo", "izquierda", "derecha"]
         direccion = random.randrange(4)
         self.direccion = lista_Direcciones[direccion]
         if self.direccion != "ninguna":
             if self.direccion == "arriba":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if 0 > (self.posicionEjeY - self.movimiento):
                     if self.posicionEjeY == 0:
                         self.posicionEjeY = self.celdasY - self.movimiento
@@ -138,6 +167,7 @@ class ObstaculoDificil():
                 else:
                     self.posicionEjeY -= self.movimiento
             elif self.direccion == "abajo":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if self.celdasY <= (self.posicionEjeY + self.movimiento):
                     if self.posicionEjeY == self.celdasY:
                         self.posicionEjeY = self.movimiento
@@ -146,6 +176,7 @@ class ObstaculoDificil():
                 else:
                     self.posicionEjeY += self.movimiento
             elif self.direccion == "izquierda":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if 0 > (self.posicionEjeX - self.movimiento):
                     if self.posicionEjeX == 0:
                         self.posicionEjeX = self.celdasX - self.movimiento
@@ -154,6 +185,7 @@ class ObstaculoDificil():
                 else:
                     self.posicionEjeX -= self.movimiento
             elif self.direccion == "derecha":
+                # La condicion tiene en cuenta la estrategia toroidal o del pacman
                 if self.celdasX <= (self.posicionEjeX + self.movimiento):
                     if self.posicionEjeX == self.celdasX:
                         self.posicionEjeX = self.movimiento
