@@ -2,13 +2,6 @@ import random
 
 
 class ObjetivoSimple():
-    posicionEjeX=0
-    posicionEjeY=0
-    celdasX = 0
-    celdasY = 0
-    direccion="ninguna"
-    movimiento=0
-    estado=1
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
         '''
@@ -21,6 +14,9 @@ class ObjetivoSimple():
         self.posicionEjeY=ejeY
         self.celdasX=celdasX
         self.celdasY=celdasY
+        self.direccion = "ninguna"
+        self.movimiento = 0
+        self.estado = 1
 
     def cambiaDireccion(self):
         if self.direccion != "ninguna":
@@ -62,13 +58,6 @@ class ObjetivoSimple():
                     self.posicionEjeX += self.movimiento
 
 class ObjetivoMedio():
-    posicionEjeX = 0
-    posicionEjeY = 0
-    celdasX=0
-    celdasY=0
-    direccion = "ninguna"
-    movimiento = 1
-    estado = 1
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
         '''
@@ -81,6 +70,9 @@ class ObjetivoMedio():
         self.posicionEjeY = ejeY
         self.celdasX = celdasX
         self.celdasY = celdasY
+        self.direccion = "ninguna"
+        self.movimiento = 1
+        self.estado = 1
         # Creo una lista con las diferentes direcciones y aleatoriamente se escoge una
         lista_Direcciones = ["arriba", "abajo", "izquierda", "derecha"]
         direccion = random.randrange(4)
@@ -128,14 +120,6 @@ class ObjetivoMedio():
                     self.posicionEjeX += self.movimiento
 
 class ObjetivoDificil():
-    posicionEjeX = 0
-    posicionEjeY = 0
-    celdasX = 0
-    celdasY = 0
-    direccion="ninguna"
-    movimiento = 2
-    estado = 1
-
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
         '''
@@ -148,7 +132,9 @@ class ObjetivoDificil():
         self.posicionEjeY = ejeY
         self.celdasX = celdasX
         self.celdasY = celdasY
-
+        self.direccion = "ninguna"
+        self.movimiento = 2
+        self.estado = 1
     # Método para añadir dificultad al juego
     # Según aumente la dificultad se moverá más rápido
     def cambiaDireccion(self):

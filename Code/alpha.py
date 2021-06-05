@@ -37,7 +37,7 @@ while True:
     '''
     Este es un bucle infinito que se encargara de iniciar partidas y mostrar la tabla de puntuaciones
     '''
-    partida=Partida(600,600,50,50, highscore)
+    partida=Partida(600, 600, 50, 50)
     puntuaciones(partida)
     print("=======================================================")
     print("SCORES:            HIGHSCORE: "+str(lista_Puntuaciones[0].nombreJugador)+"---"+str(lista_Puntuaciones[0].score)+"---")
