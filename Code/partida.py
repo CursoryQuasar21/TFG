@@ -22,9 +22,7 @@ class Partida():
         #self.nombreJugador=print(input("Introduce tu nombre, Jugador"))
         self.nombreJugador=""
         #nivel=print(int(input("Con que nivel quieres empezar:1-Facil 2-Medio 3-Dificil 4-Imposible")))
-        nivel= 2
-
-        self.fps = pygame.time.Clock()
+        nivel=1
         if nivel == 1:
             self.nivel = "facil"
         elif nivel == 2:
