@@ -91,7 +91,6 @@ class SnakeGUI:
             partida = Partida(600,600,50,50)
 
             
-
         #BOTONES PARA DESIGNAR MODO DE JUEGO
         basic_snake = tk.Button(ventana, text="Basic Snake", bg= 'black', fg= 'green', command=basicSnake)
         basic_snake.config(font= ("Arial", 12))
@@ -100,11 +99,6 @@ class SnakeGUI:
         basic_snake = tk.Button(ventana, text="Snake vs IA ", bg= 'black', fg= 'orange red')
         basic_snake.config(font= ("Arial", 12))
         basic_snake.place(x=20, y=310)
-
-      
-
-        
-
 
         ventana.mainloop()
 

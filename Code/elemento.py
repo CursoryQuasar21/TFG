@@ -1,15 +1,14 @@
-from objetivo import*
-from obstaculo import*
-from sliders import Slider
+import numpy as np
+
+from objetivo import *
+from obstaculo import *
+from sliders import *
+from ia import *
 
 '''
 Esta clase se encargara de crear la slider, los obstaculos y objetivos
 '''
 class Elementos():
-    slider = 0
-    lista_Objetivos = []
-    lista_Obstaculos = []
-
 
     def __init__(self, nxC, nyC, nivel):
         '''
@@ -39,7 +38,10 @@ class Elementos():
             cantidadObstaculos += 5
 
         # Creamos la slider
-        self.slider = Slider(nxC // 2, nyC // 2, nxC, nyC)
+        #self.slider = Slider(nxC // 2, nyC // 2, nxC, nyC)
+        self.slider =
+        #Creamos la sliderIA
+        #self.sliderIA = SliderIA(np.zeros(nxC,nyC),0, 0)
 
         # Creamos los elementos como objetivos y obstaculos
         self.lista_Objetivos=[]
@@ -47,7 +49,7 @@ class Elementos():
         self.creadorObjetivos(nivel, cantidadObjetivos, nxC, nyC)
         self.creadorObstaculos(nivel, cantidadObstaculos, nxC, nyC)
 
-    def cantidadObjetivos(self,nivel,nxC,nyC):
+    def cantidadObjetivos(self, nivel, nxC, nyC):
         '''
         :param nivel: El nivel de la partida en el momento actual
         :param nxC: La cantidad de celdas en el eje X
@@ -116,8 +118,8 @@ class Elementos():
             ob3 = int((cantidadObjetivos - (ob1+ob2)))
 
         elif nivel == "dificil":
-            ob1 = int(cantidadObjetivos - (cantidadObjetivos * 0.1))
-            ob2 = int((cantidadObjetivos - ob1) * 0.5)
+            ob1 = int(cantidadObjetivos - (cantidadObjetivos * 0.9))
+            ob2 = int((cantidadObjetivos - ob1) * 0.7)
             ob3 = int(cantidadObjetivos - (ob1 + ob2))
         else:
             ob1 = 0
@@ -128,12 +130,11 @@ class Elementos():
         # Creamos una lista de la cantidad de los diferntes objetivos,
         # ob1-Objetivos de nivel 1, ob2-Objetivos de nivel 2 y ob3-Objetivos de nivel 3
         lista_ContadorObjetivos = [ob1, ob2, ob3]
-
-        # lista_ContadorObjetivos = [1,0,0]
-        # for obj in range(1):
+        lista_ContadorObjetivos = [1,0,0]
+        for obj in range(1):
 
         # Bucle que se va a encargar de crear tantos objetivos como numero sea la variable
-        for obj in range(cantidadObjetivos):
+        #for obj in range(cantidadObjetivos):
 
             # La variable verificarCordenada se encarga de confirmar
             # las coordenadas del objetivo que no coincidan con ninguna otra cordenada del juego
@@ -229,11 +230,11 @@ class Elementos():
         lista_ContadorObstaculos = [ob1, ob2, ob3]
 
         # pruebas
-        # lista_ContadorObstaculos = [1,0,0]
-        # for obj in range(1):
+        lista_ContadorObstaculos = [1,0,0]
+        for obj in range(1):
 
         # Bucle que se va a encargar de crear tantos obstaculos como numero sea la variable
-        for obj in range(cantidadObstaculos):
+        #for obj in range(cantidadObstaculos):
 
             # La variable verificarCordenada se encarga de confirmar
             # las coordenadas del objetivo que no coincidan con ninguna otra cordenada del juego
