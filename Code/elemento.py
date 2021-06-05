@@ -38,8 +38,7 @@ class Elementos():
             cantidadObstaculos += 5
 
         # Creamos la slider
-        #self.slider = Slider(nxC // 2, nyC // 2, nxC, nyC)
-        self.slider =
+        self.slider = Slider(nxC // 2, nyC // 2, nxC, nyC)
         #Creamos la sliderIA
         #self.sliderIA = SliderIA(np.zeros(nxC,nyC),0, 0)
 

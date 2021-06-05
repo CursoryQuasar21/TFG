@@ -90,8 +90,8 @@ def Astar(mapa, inicio, objetivo):
 ##########################
 class Snake():
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
-        self.posicionEjeX = [ejeX,ejeX-1]
-        self.posicionEjeY = [ejeY]
+        self.posicionEjeX = [ejeX, ejeX-1, ejeX-2]
+        self.posicionEjeY = [ejeY, ejeY,   ejeY]
         self.celdasX = celdasX
         self.celdasY = celdasY
         self.direction = "Derecha"
@@ -106,7 +106,7 @@ class Snake():
         if direccion == "Abajo" and not self.direction == "Arriba":
             self.direction = "Abajo"
 
-    def move(self,foodPos):
+    def move(self, foodPos):
         if self.direction == "Derecha":
             self.posicionEjeX[0] += 1
         if self.direction == "Izquierda":
@@ -123,7 +123,6 @@ class Snake():
         else:
             return 0
 
-
     def checkCollision(self):
         x = self.posicionEjeX[0]
         y = self.posicionEjeY[0]
@@ -137,7 +136,7 @@ class Snake():
         return 0
 
     def getHeadPos(self):
-        posicion = [self.posicionEjeX[0],self.posicionEjeY[0]]
+        posicion = [self.posicionEjeX[0], self.posicionEjeY[0]]
         return posicion
 
     def getBody(self):
@@ -163,84 +162,61 @@ class FoodSpawer():
     def setFoodOnScreen(self, b):
         self.isFoodOnScreen = b
 
-
 class Mapa:
 
     def __init__(self, x, y):
         self.mapa = np.zeros((x, y))
 
-def main():
-    # Mapa (Matriz)
-    mp = Mapa(50,50)
-    mapa = mp.mapa
+    def getMapa(self):
+        return self.mapa
 
-    # Mapa (Pygame)
+def main():
+    #
+    #
     # Configuramos los ajustes de la pantalla
     pygame.init()
+    # Configuramos las dimensiones de la pantalla
     height = 500
     width = 500
-    # Configuramos las dimensiones de la pantalla
+    nxC = 50
+    nyC = 50
     screen = pygame.display.set_mode((height, width))
     # Dimensiones de las celdas en funcion del numero y cantidad de las mismas
-    dimCW = width / 50
-    dimCH = height / 50
-    pygame.display.set_caption('A* with Snake')
-    fps = pygame.time.Clock()
+    dimCW = width / nxC
+    dimCH = height / nyC
+    # Congiguramos el color de fondo
     # Con una intensidad los canales de color(Para formar colores en funcion de los primarios)
     bg = 25, 25, 25
     # Cambiamos el color de fondo por el elegido
     screen.fill(bg)
+    fps = pygame.time.Clock()
+    #
+    #
+    # Configuramos los elementos a nivel visual de la partida
+    mapa= Mapa(nxC, nyC)
+    snake = Snake(5, 5, nxC, nyC)
+    foodSpawner = FoodSpawer(10, 5)
+    mapa.mapa[foodSpawner.posicionEjeX,foodSpawner.posicionEjeY] = 1
+    for i in range(len(snake.posicionEjeX)):
+        mapa.mapa[snake.posicionEjeX[i], snake.posicionEjeY[i]] = 2
 
-    # Comida
-    foodSpawner = FoodSpawer(5,10)
-
-    # IA
-    snake = Snake(5, 5, 50, 50)
-    score = 0
-    inicio = (snake.posicionEjeX[0], snake.posicionEjeY[0])
-    objetivo = (foodSpawner.posicionEjeX, foodSpawner.posicionEjeY)
-
-    # Humano
-    #snake2 = Snake(100, 100)
-    #score2 = 0
-
+    movimiento = False
     while True:
-        newMapa = np.copy(mapa)
-        camino = Astar(mapa, inicio, objetivo)
-        print(camino)
-        snake_x = snake.posicionEjeX[0]
-        snake_y = snake.posicionEjeY[0]
-        # IA
-        for (x, y) in camino:
-            if x > snake_x:
-                snake.changueDirTo('Derecha')
-            if x < snake_x:
-                snake.changueDirTo('Izquierda')
-            if y > snake_y:
-                snake.changueDirTo('Abajo')
-            if y < snake_y:
-                snake.changueDirTo('Arriba')
-            snake_x = x
-            snake_y = y
+        # Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
+        newMapa = np.copy(mapa.mapa)
+        # Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
+        screen.fill(bg)
+        #
+        #
 
-        foodPos = []
-        foodPos.append(foodSpawner.posicionEjeX)
-        foodPos.append(foodSpawner.posicionEjeY)
 
-        # IA
-        if (snake.move(foodPos) == 1):  # Si hay colision
-            score += 1
-            foodSpawner.setFoodOnScreen(False)
-        # Humano
-        #if (snake2.move(foodPos) == 1):  # Si hay colision
-        #    score2 += 1
-        #    foodSpawner.setFoodOnScreen(False)
-
-        newMapa[foodPos[0],foodPos[1]] = 1
-        dimCW = 500 / 50
-        dimCH = 500 / 50
-        for x in range(50):
-            for y in range(50):
+        #
+        #
+        # Dibujamos el tablero
+        for x in range(0, nxC):
+            for y in range(0, nyC):
+                # Implementamos la condicion del control del flujo
+                # if not pause:
                 # Creamos los cuadrados de cada celda a dibujar
                 poly = [((x) * dimCW, y * dimCH),
                         ((x + 1) * dimCW, y * dimCH),
@@ -261,42 +237,15 @@ def main():
                     pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
                 else:
                     pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
-        # IA
-        print(snake.posicionEjeX)
-        for pos in range(len(snake.posicionEjeX)):
-            newMapa[snake.posicionEjeX[pos],snake.posicionEjeY[pos]] = 2
-
-        # Humano
-        # for pos in snake2.getBody():
-        #    pygame.draw.rect(window, pygame.Color(0, 0, 225),
-        #                     pygame.Rect(pos[0], pos[1], 10, 10))  # x,y,ancho,alto
-
-        # Dibujar Comida
-        newMapa[foodPos[0], foodPos[1]] = 1
         # Actualizamos el estado del juego
-        mapa = np.copy(newMapa)
-        # IA
-        #if (snake.checkCollision() == 1):
-        #    MAPA.gameOver(score, score2)
-        # Humano
-        #if (snake2.checkCollision() == 1):
-        #    MAPA.gameOver(score, score2)
-        print("--------")
-        print(snake.getHeadPos())
-        print("--------")
-        # Puntaje
-        pygame.display.set_caption("IA | Score :" + str(score))
-        #pygame.display.set_caption("IA | Score :" + str(score) + " Humano | Score :" + str(score2))
-        pygame.display.flip()
-        fps.tick(24)
-
-        # Actualizamos el estado del juego
-        mapa = np.copy(newMapa)
+        mapa.mapa = np.copy(newMapa)
         # Actualizamos la pantalla
         pygame.display.flip()
-        # Nodo
-        inicio = snake.getHeadPos()[0], snake.getHeadPos()[1]
-        objetivo = foodPos[0], foodPos[1]
+
+        # Para pruebas
+        # print(np.transpose(newGameState))
+    # Modificamos la puntuacion
+    self.score = self.elemento.slider.longitud - inicial
 
 if __name__ == '__main__':
     main()
