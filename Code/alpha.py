@@ -1,16 +1,17 @@
+from snakegui import SnakeGUI
 from partida import Partida
 
 '''
 Esta clase es la encargada de poner todo en marcha(La partida, sus elementos y el funcionamiento y mecanicas de los mismos)
 '''
-lista_Puntuaciones=[]
-highscore=0
 
 def puntuaciones(partida):
     '''
     :param partida: El parametro partida contiene la puntuacion de la partida y el nivel al que ha llegado
     :return: El metodo no devuelve nada de manera explicita pero si que modifica las variables de clase "lista_Puntuaciones" y "highscore"
     '''
+    lista_Puntuaciones=[]
+
     contador=len(lista_Puntuaciones)
     #En funcion del nivel se le aplicara un bonus de pntuacion en base al nivel
     if partida.nivel=="facil":
@@ -37,11 +38,6 @@ while True:
     '''
     Este es un bucle infinito que se encargara de iniciar partidas y mostrar la tabla de puntuaciones
     '''
-    partida=Partida(600,600,50,50, highscore)
-    puntuaciones(partida)
-    print("=======================================================")
-    print("SCORES:            HIGHSCORE: "+str(lista_Puntuaciones[0].nombreJugador)+"---"+str(lista_Puntuaciones[0].score)+"---")
-    print("")
-    for i in range(len(lista_Puntuaciones)):
-        print(str(i+1)+"º."+str(lista_Puntuaciones[i].nombreJugador)+"-----"+str(lista_Puntuaciones[i].score))
-    print("=======================================================")
+    snake_gui = SnakeGUI()
+    #puntuaciones(partida)
+    

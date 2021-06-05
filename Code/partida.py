@@ -16,7 +16,7 @@ class Partida():
     time=1
     elemento = 0
     #Creamos el constructor con todo lo que va ha intervenir en la partida
-    def __init__(self, height, width, nxC, nyC, highscore):
+    def __init__(self, height, width, nxC, nyC):
         '''
         :param height: La altura que va a tener la ventana
         :param width: La anchura que va a tener la ventana
@@ -30,7 +30,7 @@ class Partida():
         #prueba
         #self.nombreJugador=print(input("Introduce tu nombre, Jugador"))
         #nivel=print(int(input("Con que nivel quieres empezar:1-Facil 2-Medio 3-Dificil 4-Imposible")))
-        nivel= 3
+        nivel=1
         if nivel == 1:
             self.nivel = "facil"
             self.time = 0.15
