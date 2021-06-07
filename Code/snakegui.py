@@ -1,11 +1,9 @@
 import tkinter as tk
 import pickle
-
 from tkinter import Canvas, ttk
-from numpy import datetime_data
 from partida import Partida
 from jugador import Jugador
-
+from ia import main
 class SnakeGUI:
     '''Esta clase gestiona la interfaz de usuario del juego'''
 
@@ -95,7 +93,7 @@ class SnakeGUI:
         basic_snake.config(font= ("Arial", 12))
         basic_snake.place(x=20, y=250)
 
-        basic_snake = tk.Button(ventana, text="Snake vs IA ", bg= 'black', fg= 'orange red')
+        basic_snake = tk.Button(ventana, text="Snake vs IA ", bg= 'black', fg= 'orange red', command=self.snakeVsIA)
         basic_snake.config(font= ("Arial", 12))
         basic_snake.place(x=20, y=310)
 
@@ -104,16 +102,16 @@ class SnakeGUI:
         separator.create_line(0, 200, 200, 0, fill="green")
 
         #Asignamos las puntuaciones a su sitio correspondiente del ranking
-        if len(self.lista_partidas)>=1:
+        if len(self.lista_partidas) >= 1:
             self.highscore_label.config(text='HIGHSCORE:'+str(self.lista_partidas[0].score))
             self.firstP_label.config(text=self.lista_partidas[0].nombreJugador+' -> ' + str(self.lista_partidas[0].score))
-        if len(self.lista_partidas)>=2:
+        if len(self.lista_partidas) >= 2:
             self.secondP_label.config(text=self.lista_partidas[1].nombreJugador+' -> ' + str(self.lista_partidas[1].score))
-        if len(self.lista_partidas)>=3:
+        if len(self.lista_partidas) >= 3:
             self.thirdP_label.config(text=self.lista_partidas[2].nombreJugador+' -> ' + str(self.lista_partidas[2].score))
-        if len(self.lista_partidas)>=4:
+        if len(self.lista_partidas) >= 4:
             self.forthP_label.config(text=self.lista_partidas[3].nombreJugador+' -> ' + str(self.lista_partidas[3].score))
-        if len(self.lista_partidas)>=5:
+        if len(self.lista_partidas) >= 5:
             self.fithP_label.config(text=self.lista_partidas[4].nombreJugador+' -> ' + str(self.lista_partidas[4].score))
 
         ventana.mainloop()
@@ -122,9 +120,9 @@ class SnakeGUI:
     #MÉTODOS QUE GESTIONAN LA FUNCIONALIDAD DE LA INTERFAZ
     #
     def basicSnake(self):
-            '''Este método una vez que es llamado inicia 
-            la partida del basic snake'''
-
+            '''
+            :return: Este método una vez que es llamado inicia la partida del basic snake
+            '''
             #Evaluamos el valor de el radiobutton para establecer el nivel
             if self.radio_value.get() == 1:
                 self.nivel = 1
@@ -136,19 +134,25 @@ class SnakeGUI:
                 self.nivel = 4
 
             #Iniciamos la partida con los parámetros establecidos.
-            partida = Partida(600,600,50,50,self.name_txtbox.get(),self.nivel)
+            partida = Partida(600, 600, 50, 50, self.name_txtbox.get(), self.nivel)
             self.puntuacion(partida)
             self.highscore_label.config(text='HIGHSCORE:'+str(self.lista_partidas[0].score))
-            if len(self.lista_partidas)>=1:
+            if len(self.lista_partidas) >= 1:
                 self.firstP_label.config(text=self.lista_partidas[0].nombreJugador+' -> ' + str(self.lista_partidas[0].score))
-            if len(self.lista_partidas)>=2:
+            if len(self.lista_partidas) >= 2:
                 self.secondP_label.config(text=self.lista_partidas[1].nombreJugador+' -> ' + str(self.lista_partidas[1].score))
-            if len(self.lista_partidas)>=3:
+            if len(self.lista_partidas) >= 3:
                 self.thirdP_label.config(text=self.lista_partidas[2].nombreJugador+' -> ' + str(self.lista_partidas[2].score))
-            if len(self.lista_partidas)>=4:
+            if len(self.lista_partidas) >= 4:
                 self.forthP_label.config(text=self.lista_partidas[3].nombreJugador+' -> ' + str(self.lista_partidas[3].score))
-            if len(self.lista_partidas)>=5:
+            if len(self.lista_partidas) >= 5:
                 self.fithP_label.config(text=self.lista_partidas[4].nombreJugador+' -> ' + str(self.lista_partidas[4].score))
+
+    def snakeVsIA(self):
+        '''
+        :return: Este método una vez que es llamado inicia la partida de Snake VS IA
+        '''
+        main()
 
     def puntuacion(self, partida):
         '''

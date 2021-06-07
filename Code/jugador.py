@@ -7,4 +7,3 @@ class Jugador:
 
         self.nombreJugador = nombre
         self.score = puntuacion
-         

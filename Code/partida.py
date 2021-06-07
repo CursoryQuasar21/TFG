@@ -19,9 +19,10 @@ class Partida():
         self.nxC = nxC
         self.nyC = nyC
 
-        self.nombreJugador=nombre
+        # Inicializamos el nombre de usuario
+        self.nombreJugador = nombre
 
-        self.fps = pygame.time.Clock()
+        # Filtramos e inicializamos el nivel
         if nivel == 1:
             self.nivel = "facil"
         elif nivel == 2:
@@ -31,29 +32,138 @@ class Partida():
         else:
             self.nivel = "imposible"
 
+        # Manejamos el timing del juego
+        self.fps = pygame.time.Clock()
 
         # Creo y guardo una matriz poniendo todos los valores a cero
-        self.gameState=np.zeros((nyC,nxC))
+        self.gameState = np.zeros((nyC, nxC))
+
         # Creo todo tipo de elementos que se van a interferir en el juego
-        self.elemento=Elemento(nxC,nyC,self.nivel)
+        self.elemento = Elemento(nxC,nyC,self.nivel)
+
+        # Inicializamos el estado de la partida
+        self.estado = True
+
         # Lanzamos el metodo que va a iniciar la partida
         self.partida(height, width)
 
     def dificultad(self,movimiento):
+        '''
+        :param movimiento: El parametro movimiento es el que determina si ha empezado la partida para el jugador
+        :return: No devuelve nada de manera explicita, pero modifica el timing de la ejecucion
+        '''
         if movimiento == True:
             if self.nivel == "facil":
                 self.fps.tick(4)
             elif self.nivel == "medio":
                 self.fps.tick(12)
             elif self.nivel == "dificil":
-                self.fps.tick(24)
+                self.fps.tick(16)
             elif self.nivel == "imposible":
-                self.fps.tick(32)
+                self.fps.tick(24)
         else:
             if self.nivel == "facil" or self.nivel == "medio":
                 self.fps.tick(40)
             else:
                 self.fps.tick(100)
+
+    def inicializarMapa(self):
+        '''
+        :return: No devuelve nada de manera explicita, pero modifica los valores del atributo gamestate
+        '''
+        for i in self.elemento.lista_Objetivos:
+            self.gameState[i.posicion[0], i.posicion[1]] = 1
+        # Pintamos la slider
+        for i in self.elemento.slider.posicion:
+            self.gameState[i[0], i[1]] = 2
+        # Pintamos los obstaculos
+        for i in self.elemento.lista_Obstaculos:
+            self.gameState[i.posicion[0], i.posicion[1]] = 3
+
+    def actualizarMapa(self, movimiento, newGameState):
+        # Automatizamos la direccion de los objetivos
+        impacto = None
+        contador = 0
+        for i in self.elemento.lista_Objetivos:
+            newGameState[i.posicion[0], i.posicion[1]] = 0
+            self.elemento.lista_Objetivos[contador].cambiaDireccion()
+            obj = self.elemento.lista_Objetivos[contador]
+            newGameState[obj.posicion[0], obj.posicion[1]] = 1
+            if obj.posicion == self.elemento.slider.posicion[0] and movimiento == True:
+                objetivo_Impactado = contador
+                impacto = True
+            contador += 1
+
+        if impacto != None:
+            self.elemento.slider.objetivo_alcanzado(objetivo_Impactado)
+        contador = 0
+        # Automatizamos la direccion de los obstaculos
+        for i in self.elemento.lista_Obstaculos:
+            newGameState[i.posicion[0], i.posicion[1]] = 0
+            self.elemento.lista_Obstaculos[contador].cambiaDireccion()
+            obs = self.elemento.lista_Obstaculos[contador]
+            newGameState[obs.posicion[0], obs.posicion[1]] = 3
+            if obs.posicion == self.elemento.slider.posicion[0] and movimiento == True:
+                self.estado = False
+            contador += 1
+
+        self.elemento.lista_Objetivos = self.elemento.slider.objetivos
+
+        # Automatizamos la direccion del slider, para que siga con la direccion establecida
+        if self.elemento.slider.direccion != "Ninguna" and self.elemento.slider.estado != 0:
+            newGameState[self.elemento.slider.posicion[0][0], self.elemento.slider.posicion[0][1]] = 0
+            self.elemento.slider.cambiaDireccion()
+            newGameState[self.elemento.slider.posicion[0][0], self.elemento.slider.posicion[0][1]] = 2
+            self.elemento.lista_Objetivos = self.elemento.slider.objetivos
+            self.elemento.lista_Obstaculos = self.elemento.slider.obstaculos
+            # Si la slider a chocado con un obstaculo, pasa de estar viva a muerta
+            if self.elemento.slider.estado == 0:
+                self.estado = False
+            else:
+                # Condicion si la slider tiene mas de una celda de longitud
+                if self.elemento.slider.longitud > 1 and self.elemento.slider.estado != 0:
+                    # Hacemos que todo el cuerpo de la slider siga a la cabeza
+                    contador = 0
+                    for i in self.elemento.slider.posicion:
+                        if contador > 0:
+                            # Se necesita variables arbitrarias que aislen el valor de la cola para que no apunten varios a la vez
+                            colaX = self.elemento.slider.cola[0]
+                            colaY = self.elemento.slider.cola[1]
+                            newGameState[i[0], i[1]] = 0
+                            varX = i[0]
+                            varY = i[1]
+                            self.elemento.slider.posicion[contador] = [colaX,colaY]
+                            newGameState[self.elemento.slider.posicion[contador][0], self.elemento.slider.posicion[contador][1]] = 2
+                            self.elemento.slider.cola[0] = varX
+                            self.elemento.slider.cola[1] = varY
+                        contador += 1
+                self.elemento.slider.cola = self.elemento.slider.posicion[0]
+        return newGameState
+
+    def cambioNivel(self, newGameState):
+        if len(self.elemento.lista_Objetivos) == 0:
+            # Coindiciones que en funcione del nivel actual, determina el proximo nivel
+            if self.nivel == "facil":
+                self.nivel = "medio"
+            elif self.nivel == "medio":
+                self.nivel = "dificil"
+            elif self.nivel == "dificil":
+                self.nivel = "imposible"
+            else:
+                self.nivel = "imposible"
+
+            self.elemento.lista_Objetivos = []
+            self.elemento.lista_Obstaculos = []
+            # Creamos de nuevo todos los obstaculos
+            self.elemento.creadorObjetivos(self.nivel, self.nxC, self.nyC)
+            if self.nivel == "imposible":
+                self.elemento.creadorObstaculos(self.nivel, self.nxC, self.nyC)
+            else:
+                self.gameState = np.zeros((self.nyC, self.nxC))
+                for i in self.elemento.slider.posicion:
+                    newGameState[i[0], i[1]] = 2
+                self.elemento.creadorObstaculos(self.nivel, self.nxC, self.nyC)
+        return newGameState
 
     def partida(self, height, width):
         '''
@@ -63,7 +173,7 @@ class Partida():
         :return: No devuelve nada de manera explicita pero se lleva a cabo toda la partida y modifica ciertos atributos de clase
         '''
         # Guardamos en una veriable autilizar la longitud inicial
-        inicial=self.elemento.slider.longitud
+        inicial = self.elemento.slider.longitud
         #
         #
         # Configuramos los ajustes de la pantalla
@@ -81,40 +191,28 @@ class Partida():
         #
         #
         # Configuramos los elementos a nivel visual de la partida
-        # Pintamos los objetivos
-        for i in range(len(self.elemento.lista_Objetivos)):
-            self.gameState[self.elemento.lista_Objetivos[i].posicionEjeX, self.elemento.lista_Objetivos[i].posicionEjeY] = 1
-        # Pintamos la slider
-        for i in range(self.elemento.slider.longitud):
-            self.gameState[self.elemento.slider.posicionEjeX[i], self.elemento.slider.posicionEjeY[i]] = 2
-        # Pintamos los obstaculos
-        for i in range(len(self.elemento.lista_Obstaculos)):
-            self.gameState[self.elemento.lista_Obstaculos[i].posicionEjeX, self.elemento.lista_Obstaculos[i].posicionEjeY] = 3
+        self.inicializarMapa()
         #
         #
         # Configuramos las variable clave como el estado de la partida
-        partida = True
         pause = True
         # Iniciamos la partida, en un principio pausada hasta que el jugador toque por primera vez una tecla cualquiera
         v=True
         movimiento=False
-        while partida:
-            # Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
+        while self.estado:
             newGameState = np.copy(self.gameState)
+            # Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
             # Añadir un tiempo de espera para que el programa vaya mas lento
             self.dificultad(movimiento)
-
             # Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
             screen.fill(bg)
             # Eventos de Teclado y raton
             ev = pygame.event.get()
             for event in ev:
-
                 # Evento de cierre de ventana mediante raton
                 if event.type == pygame.QUIT:
-                    # Modificamos la puntuacion
-                    self.score = self.elemento.slider.longitud - inicial
-                    pygame.display.quit()
+                    pygame.quit()
+                    sys.exit()
                 # Evento de teclado
                 if event.type == pygame.KEYDOWN:
                     # Pausar el juego en mantenimiento
@@ -124,102 +222,35 @@ class Partida():
                     # Teclas W y Up
                     if event.key == pygame.K_w or event.key == pygame.K_UP:
                         movimiento = True
-                        if self.elemento.slider.direccion != "arriba" and self.elemento.slider.direccion != "abajo":
-                            self.elemento.slider.direccion = "arriba"
+                        if self.elemento.slider.direccion != "Arriba" and self.elemento.slider.direccion != "Abajo":
+                            self.elemento.slider.direccion = "Arriba"
                             pause=False
                     # Teclas S y Down
                     elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
                         movimiento = True
-                        if self.elemento.slider.direccion != "abajo" and self.elemento.slider.direccion != "arriba":
-                            self.elemento.slider.direccion = "abajo"
+                        if self.elemento.slider.direccion != "Abajo" and self.elemento.slider.direccion != "Arriba":
+                            self.elemento.slider.direccion = "Abajo"
                             pause = False
                     # Teclas A y Left
                     elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
                         movimiento = True
-                        if self.elemento.slider.direccion != "izquierda" and self.elemento.slider.direccion != "derecha":
-                            self.elemento.slider.direccion = "izquierda"
+                        if self.elemento.slider.direccion != "Izquierda" and self.elemento.slider.direccion != "Derecha":
+                            self.elemento.slider.direccion = "Izquierda"
                             pause = False
                     # Teclas D y Right
                     elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                         movimiento = True
-                        if self.elemento.slider.direccion != "derecha" and self.elemento.slider.direccion != "izquierda":
-                            self.elemento.slider.direccion = "derecha"
+                        if self.elemento.slider.direccion != "Derecha" and self.elemento.slider.direccion != "Izquierda":
+                            self.elemento.slider.direccion = "Derecha"
                             pause = False
             #
             #
             # Autmatizamos los movimientos
-            # Automatizamos la direccion de los objetivos
-            objetivo_Impactado=None
-            for i in range(len(self.elemento.lista_Objetivos)):
-                newGameState[self.elemento.lista_Objetivos[i].posicionEjeX, self.elemento.lista_Objetivos[i].posicionEjeY] = 0
-                self.elemento.lista_Objetivos[i].cambiaDireccion()
-                newGameState[self.elemento.lista_Objetivos[i].posicionEjeX, self.elemento.lista_Objetivos[i].posicionEjeY] = 1
-                if self.elemento.lista_Objetivos[i].posicionEjeX == self.elemento.slider.posicionEjeX[0] \
-                    and self.elemento.lista_Objetivos[i].posicionEjeY == self.elemento.slider.posicionEjeY[0] \
-                    and movimiento == True:
-                    objetivo_Impactado = i
-            if objetivo_Impactado != None:
-                self.elemento.slider.objetivo_alcanzado(objetivo_Impactado)
-                self.elemento.lista_Objetivos = self.elemento.slider.objetivos
-            # Automatizamos la direccion de los obstaculos
-            for i in range(len(self.elemento.lista_Obstaculos)):
-                newGameState[self.elemento.lista_Obstaculos[i].posicionEjeX, self.elemento.lista_Obstaculos[i].posicionEjeY] = 0
-                self.elemento.lista_Obstaculos[i].cambiaDireccion()
-                newGameState[self.elemento.lista_Obstaculos[i].posicionEjeX, self.elemento.lista_Obstaculos[i].posicionEjeY] = 3
-                if self.elemento.lista_Obstaculos[i].posicionEjeX == self.elemento.slider.posicionEjeX[0] \
-                    and self.elemento.lista_Obstaculos[i].posicionEjeY == self.elemento.slider.posicionEjeY[0] \
-                    and movimiento == True:
-                    partida=False
-                self.elemento.lista_Objetivos=self.elemento.slider.objetivos
-            # Automatizamos la direccion del slider, para que siga con la direccion establecida
-            if self.elemento.slider.direccion != "ninguna" and self.elemento.slider.estado!=0:
-                newGameState[self.elemento.slider.posicionEjeX[0], self.elemento.slider.posicionEjeY[0]] = 0
-                self.elemento.slider.cambiaDireccion(0, self.elemento.slider.direccion)
-                newGameState[self.elemento.slider.posicionEjeX[0], self.elemento.slider.posicionEjeY[0]] = 2
-                self.elemento.lista_Objetivos = self.elemento.slider.objetivos
-                self.elemento.lista_Obstaculos = self.elemento.slider.obstaculos
-                # Si la slider a chocado con un obstaculo, pasa de estar viva a muerta
-                if self.elemento.slider.estado == 0:
-                    partida = False
-                else:
-                    # Condicion si la slider tiene mas de una celda de longitud
-                    if self.elemento.slider.longitud > 1 and self.elemento.slider.estado != 0:
-                        varX = 0
-                        varY = 0
-                        # Hacemos que todo el cuerpo de la slider siga a la cabeza
-                        for i in range(1, self.elemento.slider.longitud):
-                            newGameState[self.elemento.slider.posicionEjeX[i], self.elemento.slider.posicionEjeY[i]] = 0
-                            varX = self.elemento.slider.posicionEjeX[i]
-                            varY = self.elemento.slider.posicionEjeY[i]
-                            self.elemento.slider.posicionEjeX[i] = self.elemento.slider.colaX
-                            self.elemento.slider.posicionEjeY[i] = self.elemento.slider.colaY
-                            newGameState[self.elemento.slider.posicionEjeX[i], self.elemento.slider.posicionEjeY[i]] = 2
-                            self.elemento.slider.colaX = varX
-                            self.elemento.slider.colaY = varY
-                    self.elemento.slider.colaX = self.elemento.slider.posicionEjeX[0]
-                    self.elemento.slider.colaY = self.elemento.slider.posicionEjeY[0]
-            # Un verificador de impacto con objetivos
-            objetivo_Impactado=None
-            for i in range(len(self.elemento.lista_Objetivos)):
-                if self.elemento.slider.posicionEjeX[0] == self.elemento.lista_Objetivos[i].posicionEjeX \
-                        and self.elemento.slider.posicionEjeY[0] == self.elemento.lista_Objetivos[i].posicionEjeY \
-                        and movimiento == True:
-                    objetivo_Impactado = i
-            if objetivo_Impactado!=None:
-                self.elemento.slider.objetivo_alcanzado(objetivo_Impactado)
-                self.elemento.lista_Objetivos = self.elemento.slider.objetivos
-            # Un verificador de impacto con obstaculos
-            obstaculo_Impactado = None
-            for i in range(len(self.elemento.lista_Obstaculos)):
-                if self.elemento.slider.posicionEjeX[0] == self.elemento.lista_Obstaculos[i].posicionEjeX \
-                        and self.elemento.slider.posicionEjeY[0] == self.elemento.lista_Obstaculos[i].posicionEjeY \
-                        and movimiento ==True:
-                    partida = False
-            #
+            newGameState = self.actualizarMapa(movimiento,newGameState)
             #
             # Dibujamos el tablero
-            for x in range(0, self.nxC):
-                for y in range(0, self.nyC):
+            for x in range(self.nxC):
+                for y in range(self.nyC):
                     # Implementamos la condicion del control del flujo
                     # if not pause:
                         # Creamos los cuadrados de cada celda a dibujar
@@ -243,39 +274,11 @@ class Partida():
                         else:
                             pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
             # Actualizamos el estado del juego
-            self.gameState = np.copy(newGameState)
+            self.gameState = np.copy(self.cambioNivel(newGameState))
             # Actualizamos la pantalla
             pygame.display.flip()
-            # Condicion que determina si la slider se ha comido todos los objetivos
-            if len(self.elemento.lista_Objetivos) == 0:
-                # Coindiciones que en funcione del nivel actual, determina el proximo nivel
-                if self.nivel == "facil":
-                    self.nivel = "medio"
-                elif self.nivel == "medio":
-                    self.nivel = "dificil"
-                elif self.nivel == "dificil":
-                    self.nivel = "imposible"
-                else:
-                    self.nivel="imposible"
-                # Creamos de nuevo todos los objetivos y obstaculos teniendo en cuenta la slider
-                cantidadObjetivos = self.elemento.cantidadObjetivos(self.nivel,self.nxC,self.nyC)
-                cantidadObstaculos = self.elemento.cantidadObstaculos(self.nivel, self.nxC, self.nyC)
-
-                self.elemento.lista_Objetivos = []
-                self.elemento.lista_Obstaculos = []
-                # Creamos de nuevo todos los obstaculos
-                self.elemento.creadorObjetivos(self.nivel,cantidadObjetivos,self.nxC,self.nyC)
-                if self.nivel == "imposible":
-                    self.elemento.creadorObstaculos(self.nivel, cantidadObstaculos, self.nxC, self.nyC)
-                else:
-                    self.gameState = np.zeros((self.nyC, self.nxC))
-                    for i in range(self.elemento.slider.longitud):
-                        newGameState[self.elemento.slider.posicionEjeX[i], self.elemento.slider.posicionEjeY[i]] = 2
-                    self.elemento.creadorObstaculos(self.nivel, cantidadObstaculos, self.nxC, self.nyC)
             # Para pruebas
-            #print(np.transpose(newGameState))
+            # print(np.transpose(newGameState))
         # Modificamos la puntuacion
         self.score = self.elemento.slider.longitud - inicial
-
-        #Esta instrucción cierra la ventana de pygame
         pygame.quit()

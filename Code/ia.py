@@ -1,7 +1,5 @@
 import pygame
-import sys
 import random
-import time
 import numpy as np
 
 class Nodo():
@@ -16,9 +14,7 @@ class Nodo():
     def __eq__(self, otro):
         return self.posicion == otro.posicion
 
-
 def Astar(mapa, inicio, objetivo):
-    print(inicio)
     Nodo_incio = Nodo(None, inicio)
     Nodo_incio.g = Nodo_incio.h = Nodo_incio.f = 0
     Nodo_fin = Nodo(None, objetivo)
@@ -36,7 +32,6 @@ def Astar(mapa, inicio, objetivo):
 
         lista_abierta.pop(index_actual)
         lista_cerrada.append(Nodo_actual)
-
         if Nodo_actual == Nodo_fin:
             path = []
             current = Nodo_actual
@@ -76,80 +71,88 @@ def Astar(mapa, inicio, objetivo):
 
             lista_abierta.append(sucesor)
 
-
-##########################
 class Snake():
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
-        self.posicionEjeX = [ejeX, ejeX-1, ejeX-2]
-        self.posicionEjeY = [ejeY, ejeY,   ejeY]
-        self.celdasX = celdasX
-        self.celdasY = celdasY
-        self.direction = "Derecha"
+        self.posicion = [[ejeX, ejeY]]
+        self.celdas = [celdasX, celdasY]
+        self.cola = [ejeX, ejeY]
+        self.movimiento = 1
+        self.direccion = "Derecha"
 
     def changueDirTo(self, direccion):
-        if direccion == "Derecha" and not self.direction == "Izquierda":
-            self.direction = "Derecha"
-        if direccion == "Izquierda" and not self.direction == "Derecha":
-            self.direction = "Izquierda"
-        if direccion == "Arriba" and not self.direction == "Abajo":
-            self.direction = "Arriba"
-        if direccion == "Abajo" and not self.direction == "Arriba":
-            self.direction = "Abajo"
+        if direccion == "Derecha" and not self.direccion == "Izquierda":
+            self.direccion = "Derecha"
+        if direccion == "Izquierda" and not self.direccion == "Derecha":
+            self.direccion = "Izquierda"
+        if direccion == "Arriba" and not self.direccion == "Abajo":
+            self.direccion = "Arriba"
+        if direccion == "Abajo" and not self.direccion == "Arriba":
+            self.direccion = "Abajo"
 
-    def move(self, foodPos):
-        if self.direction == "Derecha":
-            self.posicionEjeX[0] += 1
-        if self.direction == "Izquierda":
-            self.posicionEjeX[0] -= 1
-        if self.direction == "Arriba":
-            self.posicionEjeX[0] -= 1
-        if self.direction == "Abajo":
-            self.posicionEjeX[0] += 1
+    def cambiarDireccion(self, foodPos):
+        self.cola = self.posicion[0].copy()
+        if self.direccion == "Arriba" and not self.direccion == "Abajo":
+            if self.posicion[0][1] == 0 or self.posicion[0][1] < (self.posicion[0][1] - self.movimiento):
+                self.posicion[0][1] = self.celdas[1] - 1
+            else:
+                self.posicion[0][1] -= self.movimiento
+        elif self.direccion == "Abajo" and not self.direccion == "Arriba":
+            if self.posicion[0][1] == self.celdas[1] - 1 or self.posicion[0][1] > (
+                    self.posicion[0][1] + self.movimiento):
+                self.posicion[0][1] = 0
+            else:
+                self.posicion[0][1] += self.movimiento
+        elif self.direccion == "Izquierda" and not self.direccion == "Derecha":
+            if self.posicion[0][0] == 0 or self.posicion[0][0] < (self.posicion[0][0] - self.movimiento):
+                self.posicion[0][0] = self.celdas[0] - 1
+            else:
+                self.posicion[0][0] -= self.movimiento
+        elif self.direccion == "Derecha" and not self.direccion == "Izquierda":
+            if self.posicion[0][0] == self.celdas[0] - 1 or self.posicion[0][0] > (
+                    self.posicion[0][0] + self.movimiento):
+                self.posicion[0][0] = 0
+            else:
+                self.posicion[0][0] += self.movimiento
 
-        if self.posicionEjeX[0] == foodPos[0] and self.posicionEjeY[0] == foodPos[1]:
-            self.posicionEjeX.insert(0, foodPos[0])
-            self.posicionEjeY.insert(0, foodPos[1])
-            return 1
-        else:
-            return 0
+        if self.posicion[0] == foodPos:
+            self.posicion.append(self.cola)
 
-    def checkCollision(self):
-        x = self.posicionEjeX[0]
-        y = self.posicionEjeY[0]
-        if x > self.celdasX or x < 0:
-            return 1
-        elif y > self.celdasY or y < 0:
-            return 1
-        # for bodyPart in self.body[1:]:
-        # if self.position == bodyPart:
-        #   return 1
-        return 0
+        if len(self.posicion) > 1:
+            contador = 0
+            for i in self.posicion:
+                if contador > 0:
+                    colaX = self.cola[0]
+                    colaY = self.cola[1]
+                    varX = i[0]
+                    varY = i[1]
+                    self.posicion[contador] = [colaX, colaY]
+                    self.cola[0] = varX
+                    self.cola[1] = varY
+                contador += 1
 
-    def getHeadPos(self):
-        posicion = [self.posicionEjeX[0], self.posicionEjeY[0]]
-        return posicion
+    def cabeza(self):
+        return self.posicion[0]
 
-    def getBody(self):
-        posicion = []
-        for i in range(len(self.posicionEjeX)):
-            if i >0:
-                posicion.append([self.posicionEjeX[i], self.posicionEjeY[i]])
-        return posicion
+    def cuerpo(self):
+        contador = 0
+        cuerpo = []
+        for i in self.posicion:
+            if contador > 0:
+                cuerpo.append(i)
+        return cuerpo
 
-class FoodSpawer():
-    def __init__(self, ejeX, ejeY):
-        self.posicionEjeX = ejeX
-        self.posicionEjeY = ejeY
+class Objetivo():
+    def __init__(self, nxC, nyC):
+        self.posicion = [random.randrange(nxC), random.randrange(nyC)]
         self.isFoodOnScreen = True
 
-    def spawnFood(self):
+    def aparecer(self, nxC, nyC):
         if self.isFoodOnScreen == False:
-            self.posicionEjeX = random.randrange(1, 50) * 10
-            self.posicionEjeX = random.randrange(1, 50) * 10
+            self.posicion = [random.randrange(nxC), random.randrange(nyC)]
             self.isFoodOnScreen = True
-        return self.position
+        return self.posicion
 
-    def setFoodOnScreen(self, b):
+    def esta(self, b):
         self.isFoodOnScreen = b
 
 class Mapa:
@@ -168,8 +171,8 @@ def main():
     # Configuramos las dimensiones de la pantalla
     height = 500
     width = 500
-    nxC = 50
-    nyC = 50
+    nxC = 30
+    nyC = 30
     screen = pygame.display.set_mode((height, width))
     # Dimensiones de las celdas en funcion del numero y cantidad de las mismas
     dimCW = width / nxC
@@ -183,28 +186,80 @@ def main():
     #
     #
     # Configuramos los elementos a nivel visual de la partida
-    mapa= Mapa(nxC, nyC)
-    snake = Snake(5, 5, nxC, nyC)
-    foodSpawner = FoodSpawer(10, 5)
-    mapa.mapa[foodSpawner.posicionEjeX,foodSpawner.posicionEjeY] = 1
-    for i in range(len(snake.posicionEjeX)):
-        mapa.mapa[snake.posicionEjeX[i], snake.posicionEjeY[i]] = 2
+    mapa = Mapa(nxC, nyC)
 
-    movimiento = False
+    # IA
+    snake = Snake(nxC // 2, nyC // 2, nxC, nyC)
+    score = 0
+    inicio = snake.cabeza()
+
+    comida = Objetivo(nxC, nyC)
+    objetivo = (comida.posicion[0], comida.posicion[1])
+    newMapa = np.copy(mapa.mapa)
+
+    # Humano
+    snake2 = Snake(nxC // 2, nyC // 2, nxC, nyC)
+    score2 = 0
+
+    screen.fill(bg)
     while True:
-        # Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
-        newMapa = np.copy(mapa.mapa)
-        # Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
+        camino = Astar(mapa.mapa, inicio, objetivo)
+        snake_x = snake.cabeza()[0]
+        snake_y = snake.cabeza()[1]
+        # IA
+        for (x, y) in camino:
+            if x > snake_x:
+                snake.changueDirTo('Derecha')
+            if x < snake_x:
+                snake.changueDirTo('Izquierda')
+            if y > snake_y:
+                snake.changueDirTo('Abajo')
+            if y < snake_y:
+                snake.changueDirTo('Arriba')
+            snake_x = x
+            snake_y = y
+        # Humano
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    snake2.changueDirTo('Derecha')
+                if event.key == pygame.K_LEFT:
+                    snake2.changueDirTo('Izquierda')
+                if event.key == pygame.K_UP:
+                    snake2.changueDirTo('Arriba')
+                if event.key == pygame.K_DOWN:
+                    snake2.changueDirTo('Abajo')
+
+        foodPos = comida.aparecer(nxC, nyC)  # Retorna posicion de comida
+
+        # IA
+        for i in snake.posicion:
+            newMapa[i[0], i[1]] = 0
+        snake.cambiarDireccion(foodPos)
+        for i in snake.posicion:
+            newMapa[i[0], i[1]] = 4
+        # Humano
+        for i in snake2.posicion:
+            newMapa[i[0], i[1]] = 0
+        snake2.cambiarDireccion(foodPos)
+        for i in snake2.posicion:
+            newMapa[i[0], i[1]] = 2
+
+
+        if snake.posicion[0] == foodPos:
+            score += 1
+            comida.esta(False)
+        if snake2.posicion[0] == foodPos:
+            score2 += 1
+            comida.esta(False)
+
         screen.fill(bg)
-        #
-        #
 
-
-        #
-        #
         # Dibujamos el tablero
-        for x in range(0, nxC):
-            for y in range(0, nyC):
+        for x in range(nxC):
+            for y in range(nyC):
                 # Implementamos la condicion del control del flujo
                 # if not pause:
                 # Creamos los cuadrados de cada celda a dibujar
@@ -225,17 +280,23 @@ def main():
                 # Slider
                 elif newMapa[x, y] == 2:
                     pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
-                else:
+                # Obstaculo
+                elif newMapa[x, y] == 3:
                     pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
-        # Actualizamos el estado del juego
-        mapa.mapa = np.copy(newMapa)
-        # Actualizamos la pantalla
-        pygame.display.flip()
+                # IA
+                else:
+                    pygame.draw.polygon(screen, (0, 0, 255), poly, 0)
 
-        # Para pruebas
-        # print(np.transpose(newGameState))
-    # Modificamos la puntuacion
-    self.score = self.elemento.slider.longitud - inicial
+        newMapa[comida.posicion[0], comida.posicion[1]] = 1
+
+        # Actualizamos la pantalla
+        # Puntaje
+        pygame.display.set_caption("IA | Score :" + str(score) + " Humano | Score :" + str(score2))
+        pygame.display.flip()
+        fps.tick(10)
+
+        inicio = snake.cabeza()
+        objetivo = (comida.posicion[0], comida.posicion[1])
 
 if __name__ == '__main__':
     main()
