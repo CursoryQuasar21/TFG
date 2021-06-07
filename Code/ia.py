@@ -4,16 +4,6 @@ import random
 import time
 import numpy as np
 
-# Developers: - Rodrigo Lara
-#            - Cesar Gutierrez
-#      -------------------------------
-#
-#                Snake Game
-#                   with
-#           A Asterisk Algortihm
-#
-#      -------------------------------
-
 class Nodo():
     def __init__(self, pariente=None, posicion=None):
         self.pariente = pariente
