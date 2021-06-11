@@ -173,3 +173,17 @@ class ObjetivoDificil():
                         self.posicion[0] = ((self.posicion[0] - self.celdas[0]) + self.movimiento)
                 else:
                     self.posicion[0] += self.movimiento
+
+class ObjetivoIA():
+    def __init__(self, nxC, nyC):
+        self.posicion = [random.randrange(nxC), random.randrange(nyC)]
+        self.isFoodOnScreen = True
+
+    def aparecer(self, nxC, nyC):
+        if self.isFoodOnScreen == False:
+            self.posicion = [random.randrange(nxC), random.randrange(nyC)]
+            self.isFoodOnScreen = True
+        return self.posicion
+
+    def esta(self, b):
+        self.isFoodOnScreen = b

@@ -1,11 +1,9 @@
-import pygame
-
 from objetivo import *
 from obstaculo import *
-from sliders import *
-
+from snake import *
+from mapa import *
 '''
-Esta clase se encargara de crear la slider, los obstaculos y objetivos
+Esta clase se encargara de crear la snake, los obstaculos y objetivos
 '''
 class Elemento():
 
@@ -16,14 +14,19 @@ class Elemento():
         :param nivel: El nivel de la partida
         '''
 
-        # Creamos la slider
-        self.slider = Slider(nxC // 2, nyC // 2, nxC, nyC)
+        # Creamos la snake
+        self.snake = Snake(nxC // 2, nyC // 2, nxC, nyC)
 
         # Creamos los elementos como objetivos y obstaculos
         self.lista_Objetivos = []
         self.lista_Obstaculos = []
+
+        # Creo y guardo una matriz poniendo todos los valores a cero
+        self.mapa = Mapa(nxC, nyC)
+
         self.creadorObjetivos(nivel, nxC, nyC)
         self.creadorObstaculos(nivel, nxC, nyC)
+
 
     def cantidadObjetivos(self, nivel, nxC, nyC):
         '''
@@ -103,65 +106,38 @@ class Elemento():
             ob2 = int((cantidadObjetivos - ob1) * 0.7)
             ob3 = int(cantidadObjetivos - (ob1 + ob2))
 
-        # pruebas
         # Creamos una lista de la cantidad de los diferntes objetivos,
         # ob1-Objetivos de nivel 1, ob2-Objetivos de nivel 2 y ob3-Objetivos de nivel 3
         lista_ContadorObjetivos = [ob1, ob2, ob3]
 
+        lista_Posiciones_Vacias = []
+
+        for i in self.snake.cuerpo:
+            self.mapa.mapa[i[0], i[1]] = 2
+        for i in self.lista_Obstaculos:
+            self.mapa.mapa[i[0], i[1]] = 3
+
+        for i in range(nxC):
+            for z in range(nyC):
+                if self.mapa.mapa[i][z] == 0:
+                    lista_Posiciones_Vacias.append([i, z])
+
         # Bucle que se va a encargar de crear tantos objetivos como numero sea la variable
         for obj in range(cantidadObjetivos):
-
-            # La variable verificarCordenada se encarga de confirmar
-            # las coordenadas del objetivo que no coincidan con ninguna otra cordenada del juego
-            verificarCordenada = True
-
-            # La variable contador se va a encargar de contar que todas las verificaciones en ese momento se cumplan
-            contador = 0
-            while verificarCordenada:
-                lista = [random.randrange(nxC), random.randrange(nyC)]
-
-                # El bucle for se encarga de recorer n veces la cantidad de la longitud del slider
-                for s in self.slider.posicion:
-                    if len(self.lista_Objetivos) == 0:
-                        if len(self.lista_Obstaculos) == 0:
-                            # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                            if lista != s:
-                                contador += 1
-                        else:
-                            for obs in self.lista_Obstaculos:
-                                # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                                if lista != s and lista != obs.posicion:
-                                    contador += 1
-                    else:
-                        for obj in self.lista_Objetivos:
-                            if len(self.lista_Obstaculos) == 0:
-                                # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                                if lista != s and lista != obj:
-                                    contador += 1
-                            else:
-                                for obs in self.lista_Obstaculos:
-                                    # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                                    if lista != s and lista != obj.posicion and lista != obs.posicion:
-                                        contador += 1
-
-                    # Ahora comprobaremos si tras todas las comprobaciones las cordenadas dadas no han coincidido con ninguna otra
-                    if (contador == self.slider.longitud) \
-                        or (contador == (self.slider.longitud*len(self.lista_Obstaculos))) \
-                        or (contador == (self.slider.longitud*len(self.lista_Objetivos)))  \
-                        or (contador == (self.slider.longitud*len(self.lista_Objetivos)*len(self.lista_Obstaculos))):
-                        # Ahora en funcion de la lista de "lista_ContadorObjetivos" crearemos unos u otros objetivos en funcion de la iteracion del bucle
-                        if lista_ContadorObjetivos[0] != 0:
-                            self.lista_Objetivos.append(ObjetivoSimple(lista[0], lista[1], nxC, nyC))
-                            lista_ContadorObjetivos[0] -= 1
-                        elif lista_ContadorObjetivos[1] != 0:
-                            self.lista_Objetivos.append(ObjetivoMedio(lista[0], lista[1], nxC, nyC))
-                            lista_ContadorObjetivos[1] -= 1
-                        elif lista_ContadorObjetivos[2] != 0:
-                            self.lista_Objetivos.append(ObjetivoDificil(lista[0], lista[1], nxC, nyC))
-                            lista_ContadorObjetivos[2] -= 1
-                        verificarCordenada = False
-        # Una vez hallamos creado todos los objetivos, los pasaremos al slider
-        self.slider.objetivos = self.lista_Objetivos
+            var = random.randrange(len(lista_Posiciones_Vacias))
+            pos = lista_Posiciones_Vacias[var]
+            self.mapa.mapa[pos[0], pos[1]] = 1
+            lista_Posiciones_Vacias.pop(var)
+            # Ahora en funcion de la lista de "lista_ContadorObjetivos" crearemos unos u otros objetivos en funcion de la iteracion del bucle
+            if lista_ContadorObjetivos[0] != 0:
+                self.lista_Objetivos.append(ObjetivoSimple(pos[0], pos[1], nxC, nyC))
+                lista_ContadorObjetivos[0] -= 1
+            elif lista_ContadorObjetivos[1] != 0:
+                self.lista_Objetivos.append(ObjetivoMedio(pos[0], pos[1], nxC, nyC))
+                lista_ContadorObjetivos[1] -= 1
+            elif lista_ContadorObjetivos[2] != 0:
+                self.lista_Objetivos.append(ObjetivoDificil(pos[0], pos[1], nxC, nyC))
+                lista_ContadorObjetivos[2] -= 1
 
     def creadorObstaculos(self, nivel, nxC, nyC):
         '''
@@ -197,63 +173,61 @@ class Elemento():
         # ob1-obstaculos de nivel 1, ob2-obstaculos de nivel 2 y ob3-obstaculos de nivel 3
         lista_ContadorObstaculos = [ob1, ob2, ob3]
 
-        # pruebas
-        #lista_ContadorObstaculos = [1,0,0]
-        #for obj in range(1):
-        cont=0
-        # Bucle que se va a encargar de crear tantos obstaculos como numero sea la variable
+        lista_Posiciones_Vacias = []
+
+        for i in self.lista_Objetivos:
+            self.mapa.mapa[i.posicion[0], i.posicion[1]] = 1
+        for i in self.snake.cuerpo:
+            self.mapa.mapa[i[0], i[1]] = 2
+        for i in self.lista_Obstaculos:
+            self.mapa.mapa[i.posicion[0], i.posicion[1]] = 3
+
+        for i in range(nxC):
+            for z in range(nyC):
+                if self.mapa.mapa[i][z] == 0:
+                    lista_Posiciones_Vacias.append([i, z])
+
+        # Bucle que se va a encargar de crear tantos objetivos como numero sea la variable
         for obj in range(cantidadObstaculos):
+            var = random.randrange(len(lista_Posiciones_Vacias))
+            pos = lista_Posiciones_Vacias[var]
+            self.mapa.mapa[pos[0], pos[1]] = 1
+            lista_Posiciones_Vacias.pop(var)
+            # Ahora en funcion de la lista de "lista_ContadorObjetivos" crearemos unos u otros objetivos en funcion de la iteracion del bucle
+            if lista_ContadorObstaculos[0] != 0:
+                self.lista_Obstaculos.append(ObstaculoSimple(pos[0], pos[1], nxC, nyC))
+                lista_ContadorObstaculos[0] -= 1
+            elif lista_ContadorObstaculos[1] != 0:
+                self.lista_Obstaculos.append(ObstaculoMedio(pos[0], pos[1], nxC, nyC))
+                lista_ContadorObstaculos[1] -= 1
+            elif lista_ContadorObstaculos[2] != 0:
+                self.lista_Obstaculos.append(ObstaculoDificil(pos[0], pos[1], nxC, nyC))
+                lista_ContadorObstaculos[2] -= 1
 
-            # La variable verificarCordenada se encarga de confirmar
-            # las coordenadas del objetivo que no coincidan con ninguna otra cordenada del juego
-            verificarCordenada = True
+    def movimiento(self,newMapa):
+        for i in self.lista_Objetivos:
+            newMapa[i.posicion[0], i.posicion[1]] = 0
+            i.cambiaDireccion()
+            newMapa[i.posicion[0], i.posicion[1]] = 1
+        for i in self.lista_Obstaculos:
+            newMapa[i.posicion[0], i.posicion[1]] = 0
+            i.cambiaDireccion()
+            newMapa[i.posicion[0], i.posicion[1]] = 3
+        for i in self.snake.cuerpo:
+            newMapa[i[0], i[1]] = 0
+        self.snake.cambiaDireccion()
+        if self.snake.direccion != "Ninguna":
+            self.verificadorPosicion()
+        for i in self.snake.cuerpo:
+            newMapa[i[0], i[1]] = 2
+        return newMapa
 
-            # La variable contador se va a encargar de contar que todas las verificaciones en ese momento se cumplan
-            contador = 0
-
-            while verificarCordenada:
-                cont += 1
-                lista = [random.randrange(nxC), random.randrange(nyC)]
-
-                # El bucle for se encarga de recorer n veces la cantidad de la longitud del slider
-                for s in self.slider.posicion:
-                    if len(self.lista_Objetivos) == 0:
-                        if len(self.lista_Obstaculos) == 0:
-                            # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                            if lista == s:
-                                contador += 1
-                        else:
-                            for obs in self.lista_Obstaculos:
-                                # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                                if lista != s and lista != obs.posicion:
-                                    contador += 1
-                    else:
-                        for obj in self.lista_Objetivos:
-                            if len(self.lista_Obstaculos) == 0:
-                                # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                                if lista != s and lista != obj.posicion:
-                                    contador += 1
-                            else:
-                                for obs in self.lista_Obstaculos:
-                                    # Si las cordenadas aleatorias no coinciden con ninguna coirdenada el contador aumenta
-                                    if lista != s and lista != obj.posicion and lista != obs.posicion:
-                                        contador += 1
-
-                    # Ahora comprobaremos si tras todas las comprobaciones las cordenadas dadas no han coincidido con ninguna otra
-                    if (contador == self.slider.longitud) \
-                            or (contador == (self.slider.longitud * len(self.lista_Obstaculos))) \
-                            or (contador == (self.slider.longitud * len(self.lista_Objetivos))) \
-                            or (contador == (self.slider.longitud * len(self.lista_Objetivos) * len(self.lista_Obstaculos))):
-                        # Ahora en funcion de la lista de "lista_ContadorObjetivos" crearemos unos u otros objetivos en funcion de la iteracion del bucle
-                        if lista_ContadorObstaculos[0] != 0:
-                            self.lista_Obstaculos.append(ObstaculoSimple(lista[0], lista[1], nxC, nyC))
-                            lista_ContadorObstaculos[0] -= 1
-                        elif lista_ContadorObstaculos[1] != 0:
-                            self.lista_Obstaculos.append(ObstaculoMedio(lista[0], lista[1], nxC, nyC))
-                            lista_ContadorObstaculos[1] -= 1
-                        elif lista_ContadorObstaculos[2] != 0:
-                            self.lista_Obstaculos.append(ObstaculoDificil(lista[0], lista[1], nxC, nyC))
-                            lista_ContadorObstaculos[2] -= 1
-                        verificarCordenada = False
-        # Una vez hallamos creado todos los obstaculos, los pasaremos al slider
-        self.slider.obstaculos = self.lista_Obstaculos
+    def verificadorPosicion(self):
+        if self.mapa.mapa[self.snake.cabeza[0], self.snake.cabeza[1]] == 0:
+            self.snake.cuerpo.pop()
+        elif self.mapa.mapa[self.snake.cabeza[0], self.snake.cabeza[1]] == 1:
+            for i in self.lista_Objetivos:
+                if i.posicion == self.snake.cabeza:
+                    self.snake.cuerpo.insert(0, list(i.posicion))
+        else:
+            self.snake.estado = 0
