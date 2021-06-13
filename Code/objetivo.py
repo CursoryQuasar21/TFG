@@ -1,15 +1,15 @@
 import random
 
 
-class ObjetivoSimple():
+class ObjetivoSimple:
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
-        '''
+        """
         :param ejeX: La posicion en el ejeX
         :param ejeY: La posicion en el ejeY
         :param celdasX: La cantidad de celdas del ejeX
         :param celdasY: La cantidad de celdas del ejeY
-        '''
+        """
         self.posicion = [ejeX, ejeY]
         self.celdas = [celdasX, celdasY]
         self.direccion = "Ninguna"
@@ -17,6 +17,9 @@ class ObjetivoSimple():
         self.estado = 1
 
     def cambiaDireccion(self):
+        """
+        :return: No devulve nada de manera explicita, pero modifica la posicion del objetivo
+        """
         if self.direccion != "Ninguna":
             if self.direccion == "Arriba":
                 # La condicion tiene en cuenta la estrategia toroidal o del pacman
@@ -55,15 +58,15 @@ class ObjetivoSimple():
                 else:
                     self.posicion[0] += self.movimiento
 
-class ObjetivoMedio():
+class ObjetivoMedio:
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
-        '''
+        """
         :param ejeX: La posicion en el ejeX
         :param ejeY: La posicion en el ejeY
         :param celdasX: La cantidad de celdas del ejeX
         :param celdasY: La cantidad de celdas del ejeY
-        '''
+        """
         self.posicion = [ejeX, ejeY]
         self.celdas = [celdasX, celdasY]
         self.direccion = "Ninguna"
@@ -74,9 +77,10 @@ class ObjetivoMedio():
         direccion = random.randrange(4)
         self.direccion = lista_Direcciones[direccion]
 
-    # Método para añadir dificultad al juego
-    # Según aumente la dificultad se moverá más rápido
     def cambiaDireccion(self):
+        """
+        :return: No devulve nada de manera explicita, pero modifica la posicion del objetivo
+        """
         if self.direccion != "Ninguna":
             if self.direccion == "Arriba":
                 # La condicion tiene en cuenta la estrategia toroidal o del pacman
@@ -115,22 +119,21 @@ class ObjetivoMedio():
                 else:
                     self.posicion[0] += self.movimiento
 
-class ObjetivoDificil():
+class ObjetivoDificil:
 
     def __init__(self, ejeX, ejeY, celdasX, celdasY):
-        '''
+        """
         :param ejeX: La posicion en el ejeX
         :param ejeY: La posicion en el ejeY
         :param celdasX: La cantidad de celdas del ejeX
         :param celdasY: La cantidad de celdas del ejeY
-        '''
+        """
         self.posicion = [ejeX, ejeY]
         self.celdas = [celdasX, celdasY]
         self.direccion = "Ninguna"
         self.movimiento = 2
         self.estado = 1
-    # Método para añadir dificultad al juego
-    # Según aumente la dificultad se moverá más rápido
+
     def cambiaDireccion(self):
         # Creo una lista con las diferentes direcciones y aleatoriamente se escoge una
         lista_Direcciones = ["Arriba", "Abajo", "Izquierda", "Derecha"]
@@ -174,16 +177,37 @@ class ObjetivoDificil():
                 else:
                     self.posicion[0] += self.movimiento
 
-class ObjetivoIA():
+class ObjetivoIA:
     def __init__(self, nxC, nyC):
+        """
+        :param nxC: Numero de celdas en el eje X
+        :param nyC: Numero de celdas en el eje Y
+        """
+
+        # Creamos de manera aleatoria la posicion del objetivo
         self.posicion = [random.randrange(nxC), random.randrange(nyC)]
+        # Confirmamos que el objetivo se encuentra en la pantalla
         self.isFoodOnScreen = True
 
     def aparecer(self, nxC, nyC):
-        if self.isFoodOnScreen == False:
+        """
+        :param nxC: Numero de celdas en el eje X
+        :param nyC: Numero de celdas en el eje Y
+        :return: Devuleve la posicion en el mapa del objetivo
+        """
+
+        # Condicional que determina si esta el objetivo en pantalla
+        if not self.isFoodOnScreen:
             self.posicion = [random.randrange(nxC), random.randrange(nyC)]
             self.isFoodOnScreen = True
+
         return self.posicion
 
     def esta(self, b):
+        """
+        :param b: Estado del objetivo en pantalla
+        :return: No devuleve nada de manera explicita pero modifica un atributo
+        """
+
+        # Cambia el valor del atributo al pasado por parametro
         self.isFoodOnScreen = b

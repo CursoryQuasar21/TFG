@@ -1,12 +1,10 @@
 import pygame
-import random
 from snake import *
 from mapa import *
 from objetivo import *
 
-def main():
-    #
-    #
+def partida():
+
     # Configuramos los ajustes de la pantalla
     pygame.init()
     # Configuramos las dimensiones de la pantalla
@@ -24,66 +22,62 @@ def main():
     # Cambiamos el color de fondo por el elegido
     screen.fill(bg)
     fps = pygame.time.Clock()
-    #
-    #
+
     # Configuramos los elementos a nivel visual de la partida
     mapa = Mapa(nxC, nyC)
 
     # Humano
-    snake2 = SnakeIA(nxC // 2, nyC // 2, nxC, nyC)
-    score2 = 0
+    snakeH = SnakeIA(nxC // 2, nyC // 2, nxC, nyC)
     # IA
-    snake = SnakeIA(nxC // 2, nyC // 2, nxC, nyC)
-    score = 0
-    inicio = snake.cabeza()
+    snakeIA = SnakeIA(nxC // 2, nyC // 2, nxC, nyC)
+    inicio = snakeIA.cabeza()
     # Comida
     comida = ObjetivoIA(nxC, nyC)
     objetivo = (comida.posicion[0], comida.posicion[1])
-    newMapa = np.copy(mapa.mapa)
+
 
     screen.fill(bg)
     while True:
         camino = Astar(mapa.mapa, inicio, objetivo)
-        snake_x = snake.cabeza()[0]
-        snake_y = snake.cabeza()[1]
+        snakeIA_x = snakeIA.cabeza()[0]
+        snakeIA_y = snakeIA.cabeza()[1]
         for (x, y) in camino:
-            if y > snake_y:
-                snake.cambiarDireccion('Abajo')
-            if y < snake_y:
-                snake.cambiarDireccion('Arriba')
-            if x > snake_x:
-                snake.cambiarDireccion('Derecha')
-            if x < snake_x:
-                snake.cambiarDireccion('Izquierda')
-            snake_x = x
-            snake_y = y
+            if y > snakeIA_y:
+                snakeIA.cambiarDireccion("Abajo")
+            if y < snakeIA_y:
+                snakeIA.cambiarDireccion("Arriba")
+            if x > snakeIA_x:
+                snakeIA.cambiarDireccion("Derecha")
+            if x < snakeIA_x:
+                snakeIA.cambiarDireccion("Izquierda")
+            snakeIA_x = x
+            snakeIA_y = y
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
-                    snake2.cambiarDireccion("Arriba")
+                    snakeH.cambiarDireccion("Arriba")
                 elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                    snake2.cambiarDireccion("Abajo")
+                    snakeH.cambiarDireccion("Abajo")
                 elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                    snake2.cambiarDireccion("Derecha")
+                    snakeH.cambiarDireccion("Derecha")
                 elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                    snake2.cambiarDireccion("Izquierda")
+                    snakeH.cambiarDireccion("Izquierda")
 
-        cp = comida.aparecer(nxC, nyC)  # Retorna posicion de comida
+        cp = comida.aparecer(nxC, nyC)
+        snakeH.mover(comida.posicion)
+        snakeIA.mover(comida.posicion)
+        newMapa = mapa.actualizarMapaIA(snakeH.posicion, snakeIA.posicion, comida.posicion)
 
-        # IA
-        newMapa = mapa.actualizarMapa()
-
-
-
-        if snake.posicion[0] == cp:
-            score += 1
+        if snakeH.posicion[0] == cp:
+            snakeH.score += 1
             comida.esta(False)
-        if snake2.posicion[0] == cp:
-            score2 += 1
+        if snakeIA.posicion[0] == cp:
+            snakeIA.score += 1
             comida.esta(False)
+
 
         screen.fill(bg)
 
@@ -93,10 +87,10 @@ def main():
                 # Implementamos la condicion del control del flujo
                 # if not pause:
                 # Creamos los cuadrados de cada celda a dibujar
-                poly = [((x) * dimCW, y * dimCH),
+                poly = [(x * dimCW, y * dimCH),
                         ((x + 1) * dimCW, y * dimCH),
                         ((x + 1) * dimCW, (y + 1) * dimCH),
-                        ((x) * dimCW, (y + 1) * dimCH)]
+                        (x * dimCW, (y + 1) * dimCH)]
                 #
                 #
                 # Reglas basicas de cada elemento en el mapa
@@ -107,7 +101,7 @@ def main():
                 # Objetivo
                 elif newMapa[x, y] == 1:
                     pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
-                # Slider
+                # Snake
                 elif newMapa[x, y] == 2:
                     pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
                 # Obstaculo
@@ -118,17 +112,15 @@ def main():
                     pygame.draw.polygon(screen, (0, 0, 255), poly, 0)
 
         newMapa[comida.posicion[0], comida.posicion[1]] = 1
-
-        # Actualizamos la pantalla
         # Puntaje
-        pygame.display.set_caption("IA | Score :" + str(score) + " Humano | Score :" + str(score2))
+        pygame.display.set_caption("IA | Score :" + str(snakeIA.score) + " Humano | Score :" + str(snakeH.score))
         pygame.display.flip()
         fps.tick(10)
 
-        inicio = snake.cabeza()
+        inicio = snakeIA.cabeza()
         objetivo = (comida.posicion[0], comida.posicion[1])
 
-class Nodo():
+class Nodo:
     def __init__(self, pariente=None, posicion=None):
         self.pariente = pariente
         self.posicion = posicion
@@ -198,4 +190,4 @@ def Astar(mapa, inicio, objetivo):
             lista_abierta.append(sucesor)
 
 if __name__ == '__main__':
-    main()
+    partida()

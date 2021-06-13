@@ -1,19 +1,20 @@
 import pygame
-import sys
 from mapa import *
-
-#modularizar, crear una clase, la clase partida va ha contener los elementos
 from elemento import Elemento
 
-class Partida():
-    #Creamos el constructor con todo lo que va ha intervenir en la partida
+class Partida:
+    """
+    Esta clase se encarga de iniciar la partida, crear los elementos y gestionar la dificultad
+    """
+
     def __init__(self, height, width, nxC, nyC, nombre, nivel):
-        '''
+        """
         :param height: La altura que va a tener la ventana
         :param width: La anchura que va a tener la ventana
         :param nxC: La cantidad de celdas en el ejeX
         :param nyC: La cantidad de celdas en el ejeY
-        '''
+        """
+
         # Guardamos las celdas de los dos ejes
         self.nxC = nxC
         self.nyC = nyC
@@ -34,7 +35,7 @@ class Partida():
         # Manejamos el timing del juego
         self.fps = pygame.time.Clock()
 
-        # Creo todo tipo de elementos que se van a interferir en el juego
+        # Inicializamos todos los elementos que intervienen en el partida
         self.elemento = Elemento(nxC, nyC, self.nivel)
 
         # Inicializamos el estado de la partida
@@ -43,12 +44,18 @@ class Partida():
         # Lanzamos el metodo que va a iniciar la partida
         self.partida(height, width)
 
+        # Modificamos la puntuacion
+        self.score = len(self.elemento.snake.cuerpo) - 1
+        pygame.quit()
+
     def dificultad(self, movimiento):
-        '''
+        """
         :param movimiento: El parametro movimiento es el que determina si ha empezado la partida para el jugador
         :return: No devuelve nada de manera explicita, pero modifica el timing de la ejecucion
-        '''
-        if movimiento == True:
+        """
+
+        # Condicion que determina si la snake se ha movido y de ser asi, en funcion del nivel, el timing es uno u otro
+        if movimiento != "Ninguna":
             if self.nivel == "facil":
                 self.fps.tick(4)
             elif self.nivel == "medio":
@@ -57,13 +64,21 @@ class Partida():
                 self.fps.tick(16)
             elif self.nivel == "imposible":
                 self.fps.tick(24)
+        # Condicion que mantiene el juego en un timing superior al establecido por el nivel por una razon
+        # Para evitar que el jugador sea capaz de encontrar patrones
         else:
             if self.nivel == "facil" or self.nivel == "medio":
                 self.fps.tick(40)
             else:
                 self.fps.tick(100)
 
-    def cambioNivel(self):
+    def cambioNivel(self, newMapa):
+        """
+        :param newMapa: El mapa de la partida en un momento concreto
+        :return: El metodo devuelve el mapa segun unos posibles cambios
+        """
+
+        # Condicion que verifica si se han capturado todos los objetivos
         if len(self.elemento.lista_Objetivos) == 0:
             # Coindiciones que en funcione del nivel actual, determina el proximo nivel
             if self.nivel == "facil":
@@ -75,27 +90,35 @@ class Partida():
             else:
                 self.nivel = "imposible"
 
+            # Vaciamos las listas de los objetivos y de los obstaculos
             self.elemento.lista_Objetivos = []
             self.elemento.lista_Obstaculos = []
-            # Creamos de nuevo todos los obstaculos
+
+            # Creamos de nuevo todos los objetivos
             self.elemento.creadorObjetivos(self.nivel, self.nxC, self.nyC)
+            # Condicion que determina si el nivel esta en imposible, crea señuelos que aumenta la dificultad del juego
             if self.nivel == "imposible":
+                # Creamos de nuevo todos los obstaculos
                 self.elemento.creadorObstaculos(self.nivel, self.nxC, self.nyC)
             else:
+                # Creamos un nuevo mapa
                 self.elemento.mapa.mapa = np.zeros((self.nyC, self.nxC))
-                for i in self.elemento.snake.cuerpo:
-                    self.elemento[i[0], i[1]] = 2
+                # Creamos de nuevo todos los obstaculos
                 self.elemento.creadorObstaculos(self.nivel, self.nxC, self.nyC)
 
+        return newMapa
+
+    def juegoPausado(self):
+        pausa = np.zeros((self.nxC, self.nyC))
+        return pausa
+
     def partida(self, height, width):
-        '''
+        """
         :param height: La altura que va a tener la ventana
         :param width: La anchura que va a tener la ventana
-        :param highscore: La mejor puntuacion
-        :return: No devuelve nada de manera explicita pero se lleva a cabo toda la partida y modifica ciertos atributos de clase
-        '''
-        #
-        #
+        :return: No devuelve nada de manera explicita pero se lleva a cabo toda la partida
+        """
+
         # Configuramos los ajustes de la pantalla
         pygame.init()
         # Configuramos las dimensiones de la pantalla
@@ -108,99 +131,93 @@ class Partida():
         bg = 25, 25, 25
         # Cambiamos el color de fondo por el elegido
         screen.fill(bg)
-        #
-        #
+
         # Configuramos los elementos a nivel visual de la partida
-        self.elemento.mapa.actualizarMapa(self.elemento.lista_Objetivos, self.elemento.lista_Obstaculos, self.elemento.snake)
-        #
-        #
-        # Configuramos las variable clave como el estado de la partida
-        pause = True
-        # Iniciamos la partida, en un principio pausada hasta que el jugador toque por primera vez una tecla cualquiera
-        movimiento=False
+        self.elemento.mapa.actualizarMapa(self.elemento.lista_Objetivos,
+                                          self.elemento.lista_Obstaculos,
+                                          self.elemento.snake)
+
+        # Creamos un mapa identico al original, con el objetivo de que no tenga en cuenta un factor importante,
+        # No tener en cuenta las operaciones de la iteracion anterior
         newMapa = np.copy(self.elemento.mapa.mapa)
+
+        # Variable que controla si el juego esta pausado o no
+        pause = False
+
+        # Iniciamos el bucle que pondra la partida en marcha
         while self.estado:
-            # Para evitar cambios de forma secuencial, consiguiendo que todos los cambios
-            # Añadir un tiempo de espera para que el programa vaya mas lento
-            self.dificultad(movimiento)
+            # Meotodo encargado de controlar el timing del juego
+            self.dificultad(self.elemento.snake.direccion)
+
             # Limpiamos la pantalla para que no se superponga los datos de la anterior iteracion
             screen.fill(bg)
+
             # Eventos de Teclado y raton
             ev = pygame.event.get()
             for event in ev:
                 # Evento de cierre de ventana mediante raton
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
                 # Evento de teclado
                 if event.type == pygame.KEYDOWN:
-                    # Pausar el juego en mantenimiento
-                    # if event.key == pygame.K_SPACE or event.key == pygame.K_p:
-                       # print("---MANTENIMIENTO---")
+                    # Filtramos de todas las teclas del teclado las que nos interesa para pausar el juego
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_p:
+                        pause = not pause
                     # Filtramos de todas las teclas del teclado las que nos interesa para movernos(w,a,s,d,flechitas)
                     # Teclas W y Up
                     if event.key == pygame.K_w or event.key == pygame.K_UP:
-                        movimiento = True
                         if self.elemento.snake.direccion != "Arriba" and not self.elemento.snake.direccion == "Abajo":
                             self.elemento.snake.direccion = "Arriba"
-                            pause=False
                     # Teclas S y Down
                     elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                        movimiento = True
                         if self.elemento.snake.direccion != "Abajo" and not self.elemento.snake.direccion == "Arriba":
                             self.elemento.snake.direccion = "Abajo"
-                            pause = False
                     # Teclas A y Left
                     elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                        movimiento = True
                         if self.elemento.snake.direccion != "Izquierda" and not self.elemento.snake.direccion == "Derecha":
                             self.elemento.snake.direccion = "Izquierda"
-                            pause = False
                     # Teclas D y Right
                     elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                        movimiento = True
                         if self.elemento.snake.direccion != "Derecha" and not self.elemento.snake.direccion == "Izquierda":
                             self.elemento.snake.direccion = "Derecha"
-                            pause = False
             #
             #
-            # Autmatizamos los movimientos
-            newMapa = self.elemento.movimiento(newMapa)
-            #
-            screen.fill(bg)
+
             # Dibujamos el tablero
             for x in range(self.nxC):
                 for y in range(self.nyC):
-                    # Implementamos la condicion del control del flujo
-                    # if not pause:
-                        # Creamos los cuadrados de cada celda a dibujar
-                        poly = [((x) * dimCW, y * dimCH),
-                                ((x + 1) * dimCW, y * dimCH),
-                                ((x + 1) * dimCW, (y + 1) * dimCH),
-                                ((x) * dimCW, (y + 1) * dimCH)]
-                        #
-                        #
-                        # Reglas basicas de cada elemento en el mapa
-                        # Dibujamos la celda por cada par de x e y
-                        # Celda muerta
-                        if newMapa[x, y] == 0:
-                            pygame.draw.polygon(screen, (128, 18, 128), poly, 1)
-                        # Objetivo
-                        elif newMapa[x, y] == 1:
-                            pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
-                        # Slider
-                        elif newMapa[x, y] == 2:
-                            pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
-                        else:
-                            pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
+                    # Dibujo de un poligono cuadrilatero regular
+                    poly = [(x * dimCW, y * dimCH),
+                            ((x + 1) * dimCW, y * dimCH),
+                            ((x + 1) * dimCW, (y + 1) * dimCH),
+                            (x * dimCW, (y + 1) * dimCH)]
+                    # Reglas basicas de cada elemento en el mapa
+                    # Dibujamos la celda por cada par de x e y
+                    # Celda muerta
+                    if newMapa[x, y] == 0:
+                        pygame.draw.polygon(screen, (128, 18, 128), poly, 1)
+                    # Objetivo
+                    elif newMapa[x, y] == 1:
+                        pygame.draw.polygon(screen, (0, 255, 0), poly, 0)
+                    # Snake
+                    elif newMapa[x, y] == 2:
+                        pygame.draw.polygon(screen, (255, 255, 255), poly, 0)
+                    # Obstaculo
+                    else:
+                        pygame.draw.polygon(screen, (255, 0, 0), poly, 0)
+            # Condicion que determina si el juego esta en pausa o no
+            if pause:
+                newMapa = self.juegoPausado()
+            else:
+                # Autmatizamos los movimientos
+                newMapa = self.elemento.autmoatizarMovimietno(newMapa)
+
+            # Condicion que determina el estaddo de la partida en funcion del estado de la snake
             if self.elemento.snake.estado == 0:
                 self.estado = False
-            # Actualizamos la pantalla
-            self.elemento.mapa.mapa=np.copy(newMapa)
-            pygame.display.flip()
 
-            # Para pruebas
-            #print(np.transpose(self.elemento.mapa.mapa))
-        # Modificamos la puntuacion
-        self.score = len(self.elemento.snake.cuerpo)-1
-        pygame.quit()
+            # Actualizamos el estado del juego
+            self.elemento.mapa.mapa = np.copy(self.cambioNivel(newMapa))
+
+            # Actualizamos la pantalla
+            pygame.display.flip()
